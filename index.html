@@ -12,9 +12,10 @@
       --panel: #0d0d14;
       --text: #b0b8c0;
       --text-dim: #5a606a;
-      --cyan: #00d4ff;
-      --cyan-dim: rgba(0, 212, 255, 0.1);
-      --cyan-glow: rgba(0, 212, 255, 0.8);
+      /* Чуть более зеленоватый лазурный */
+      --cyan: #00d4c4;
+      --cyan-dim: rgba(0, 212, 196, 0.1);
+      --cyan-glow: rgba(0, 212, 196, 0.8);
       --red: #ff4466;
       --red-glow: rgba(255, 68, 102, 0.6);
       --yellow: #ffaa00;
@@ -41,10 +42,11 @@
 
     .top-bar {
       display: flex;
-      justify-content: space-between;
+      justify-content: flex-start;
       align-items: center;
       margin-bottom: 20px;
       padding: 0 10px;
+      flex-wrap: nowrap;
     }
 
     .lang-switch {
@@ -52,8 +54,9 @@
       gap: 4px;
       background: var(--panel);
       border: 1px solid var(--border);
-      border-radius: 20px; /* Более округлый переключатель */
+      border-radius: 20px;
       padding: 4px;
+      margin-left: auto; /* Всегда прижат к правому краю */
     }
 
     .lang-btn {
@@ -69,10 +72,12 @@
       transition: all 0.3s;
       font-family: inherit;
     }
+    /* Горящие буквы без фона */
     .lang-btn.active {
-      background: var(--cyan);
-      color: #000;
-      box-shadow: 0 0 15px var(--cyan-dim);
+      background: transparent;
+      color: var(--cyan);
+      box-shadow: none;
+      text-shadow: 0 0 8px var(--cyan), 0 0 16px var(--cyan-glow), 0 0 24px var(--cyan);
       font-weight: 500;
     }
 
@@ -91,12 +96,18 @@
       font-family: inherit;
       display: none;
     }
+    /* Постоянная небольшая подсветка при видимости */
+    .back-btn.visible {
+      display: inline-block;
+      border-color: rgba(0, 212, 196, 0.35);
+      box-shadow: 0 0 10px rgba(0, 212, 196, 0.18), inset 0 0 6px rgba(0, 212, 196, 0.05);
+      color: var(--text);
+    }
     .back-btn:hover {
       border-color: var(--cyan);
       color: var(--cyan);
-      box-shadow: 0 0 10px var(--cyan-dim);
+      box-shadow: 0 0 15px var(--cyan-dim);
     }
-    .back-btn.visible { display: inline-block; }
 
     .echolot-title {
       display: flex;
@@ -124,8 +135,8 @@
 
     @keyframes textPulse {
       0%, 100% { 
-        color: #00d4ff; 
-        text-shadow: 0 0 20px #00d4ff, 0 0 40px rgba(0, 212, 255, 0.6); 
+        color: var(--cyan); 
+        text-shadow: 0 0 20px var(--cyan), 0 0 40px rgba(0, 212, 196, 0.6); 
       }
       50% { 
         color: #000000; 
@@ -135,11 +146,11 @@
 
     @keyframes logoPulse {
       0%, 100% { 
-        filter: drop-shadow(0 0 5px rgba(0, 212, 255, 0.2)); 
+        filter: drop-shadow(0 0 5px rgba(0, 212, 196, 0.2)); 
         opacity: 0.6; 
       }
       50% { 
-        filter: drop-shadow(0 0 25px #00d4ff) drop-shadow(0 0 50px rgba(0, 212, 255, 0.8)); 
+        filter: drop-shadow(0 0 25px var(--cyan)) drop-shadow(0 0 50px rgba(0, 212, 196, 0.8)); 
         opacity: 1; 
       }
     }
@@ -158,7 +169,7 @@
       background: var(--panel);
       border: 1px solid var(--border);
       padding: 20px;
-      border-radius: 24px; /* Округлая основная панель */
+      border-radius: 24px;
       max-width: 1200px;
       margin: 0 auto;
       box-shadow: 0 10px 40px rgba(0,0,0,0.5);
@@ -171,21 +182,21 @@
       padding-bottom: 10px;
     }
 
-    /* Genre grid - СОВРЕМЕННЫЙ ДИЗАЙН */
+    /* Genre grid - 3 колонки */
     .genre-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 16px;
     }
 
     .genre-card {
-      background: rgba(255, 255, 255, 0.02); /* Полупрозрачный фон без рамок */
-      border: none; /* Убрали рамки */
+      background: rgba(255, 255, 255, 0.02);
+      border: none;
       padding: 24px 16px;
-      border-radius: 24px; /* Сильное скругление */
+      border-radius: 24px;
       cursor: pointer;
       transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
-      text-align: center; /* Центрируем контент */
+      text-align: center;
       font-family: inherit;
       color: var(--text);
       display: flex;
@@ -197,32 +208,28 @@
       backdrop-filter: blur(5px);
     }
 
-    /* Эффект свечения при наведении */
     .genre-card:hover {
-      background: rgba(0, 212, 255, 0.1);
+      background: rgba(0, 212, 196, 0.1);
       transform: translateY(-5px) scale(1.02);
-      box-shadow: 0 0 25px var(--cyan-dim), inset 0 0 20px rgba(0, 212, 255, 0.05);
-      border: 1px solid rgba(0, 212, 255, 0.3); /* Тонкая светящаяся обводка только при наведении */
+      box-shadow: 0 0 25px var(--cyan-dim), inset 0 0 20px rgba(0, 212, 196, 0.05);
+      border: 1px solid rgba(0, 212, 196, 0.3);
     }
 
     .genre-card:active {
       transform: scale(0.98);
     }
 
-    /* Серебряные иконки */
+    /* Серебряные иконки через CSS filter */
     .genre-icon {
       font-size: 2rem;
-      background: linear-gradient(180deg, #ffffff 0%, #c0c0c0 50%, #707070 100%);
-      -webkit-background-clip: text;
-      background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2));
-      transition: transform 0.3s;
+      filter: grayscale(100%) brightness(1.4) contrast(1.05);
+      -webkit-filter: grayscale(100%) brightness(1.4) contrast(1.05);
+      transition: transform 0.3s, filter 0.3s;
     }
     
     .genre-card:hover .genre-icon {
       transform: scale(1.1);
-      filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0.5));
+      filter: grayscale(100%) brightness(1.7) contrast(1.15) drop-shadow(0 0 10px rgba(255, 255, 255, 0.4));
     }
 
     .genre-name {
@@ -243,7 +250,6 @@
       border-radius: 10px;
     }
 
-    /* Stations list */
     .stations-view { display: none; }
     .stations-view.active { display: block; }
     .genres-view.hidden { display: none; }
@@ -255,13 +261,17 @@
       border-bottom: 1px solid var(--border);
     }
 
+    /* Название жанра уменьшено в 1.5 раза и в одну строчку */
     .genre-header-title {
-      font-size: 1.5rem;
+      font-size: 1rem;
       color: var(--cyan);
       font-weight: 100;
-      letter-spacing: 4px;
+      letter-spacing: 2px;
       text-transform: uppercase;
       margin-bottom: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .genre-header-sub {
@@ -290,7 +300,7 @@
       transition: all 0.2s;
     }
     tbody tr:hover {
-      background: rgba(0, 212, 255, 0.03);
+      background: rgba(0, 212, 196, 0.03);
     }
     tbody tr:hover td { color: #fff; }
     tbody tr:last-child { border-bottom: none; }
@@ -307,15 +317,48 @@
     .bitrate { text-align: center; font-family: 'Courier New', monospace; font-size: 0.6rem; color: var(--text); }
     
     .signal-btn {
-      display: inline-block; padding: 4px 12px; border-radius: 12px;
-      font-size: 0.6rem; font-weight: 300; letter-spacing: 1px;
-      cursor: pointer; transition: all 0.2s;
-      border: 1px solid transparent; background: transparent; font-family: inherit;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 4px 12px;
+      border-radius: 12px;
+      font-size: 0.6rem;
+      font-weight: 300;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1px solid transparent;
+      background: transparent;
+      font-family: inherit;
+      gap: 4px;
     }
-    .signal-btn.play { color: var(--cyan); background: rgba(0, 212, 255, 0.1); }
-    .signal-btn.play:hover { background: rgba(0, 212, 255, 0.2); box-shadow: 0 0 10px var(--cyan-dim); }
+    .signal-btn.play { color: var(--cyan); background: rgba(0, 212, 196, 0.1); }
+    .signal-btn.play:hover { background: rgba(0, 212, 196, 0.2); box-shadow: 0 0 10px var(--cyan-dim); }
     .signal-btn.stop { color: var(--red); background: rgba(255, 68, 102, 0.1); animation: blink 1.5s infinite; }
     
+    /* CSS иконки для кнопок PLAY/STOP в таблице */
+    .btn-icon {
+      display: inline-block;
+      vertical-align: middle;
+      flex-shrink: 0;
+    }
+    .btn-icon.play-icon {
+      width: 0;
+      height: 0;
+      border-top: 5px solid transparent;
+      border-bottom: 5px solid transparent;
+      border-left: 7px solid currentColor;
+    }
+    .btn-icon.stop-icon {
+      width: 8px;
+      height: 8px;
+      background: currentColor;
+      border-radius: 1px;
+    }
+    .btn-text {
+      vertical-align: middle;
+    }
+
     @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
 
     .now-playing {
@@ -362,7 +405,7 @@
     
     .np-btn {
       background: rgba(255, 255, 255, 0.03);
-      border: 1px solid rgba(0, 212, 255, 0.2);
+      border: 1px solid rgba(0, 212, 196, 0.2);
       color: var(--text-dim);
       width: 44px; 
       height: 44px; 
@@ -377,6 +420,7 @@
       overflow: hidden;
       backdrop-filter: blur(4px);
       font-family: inherit;
+      padding: 0;
     }
 
     .np-btn::before {
@@ -399,7 +443,7 @@
     .np-btn:hover {
       border-color: var(--cyan);
       color: #fff;
-      box-shadow: 0 0 20px var(--cyan-dim), inset 0 0 10px rgba(0, 212, 255, 0.2);
+      box-shadow: 0 0 20px var(--cyan-dim), inset 0 0 10px rgba(0, 212, 196, 0.2);
       transform: scale(1.1);
       z-index: 1;
     }
@@ -433,6 +477,81 @@
       background: radial-gradient(circle, var(--red-glow) 0%, transparent 70%);
     }
     
+    /* CSS иконки для нижней панели управления */
+    .ctrl-icon {
+      display: inline-block;
+      position: relative;
+      z-index: 1;
+    }
+    .ctrl-icon.play-icon {
+      width: 0;
+      height: 0;
+      border-top: 8px solid transparent;
+      border-bottom: 8px solid transparent;
+      border-left: 12px solid currentColor;
+      margin-left: 3px;
+    }
+    .ctrl-icon.stop-icon {
+      width: 14px;
+      height: 14px;
+      background: currentColor;
+      border-radius: 2px;
+    }
+    .ctrl-icon.prev-icon {
+      width: 14px;
+      height: 14px;
+      position: relative;
+    }
+    .ctrl-icon.prev-icon::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 4px;
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-right: 10px solid currentColor;
+    }
+    .ctrl-icon.prev-icon::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 2px;
+      height: 14px;
+      background: currentColor;
+    }
+    .ctrl-icon.next-icon {
+      width: 14px;
+      height: 14px;
+      position: relative;
+    }
+    .ctrl-icon.next-icon::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0;
+      height: 0;
+      border-top: 7px solid transparent;
+      border-bottom: 7px solid transparent;
+      border-left: 10px solid currentColor;
+    }
+    .ctrl-icon.next-icon::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 2px;
+      height: 14px;
+      background: currentColor;
+    }
+    .ctrl-icon.mute-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+    }
+
     footer { 
       text-align: center; font-size: 0.6rem; color: var(--text-dim); 
       margin-top: 24px; letter-spacing: 1px; font-weight: 100;
@@ -446,10 +565,11 @@
       .echolot-logo { width: 60px; height: 60px; }
       .sub { font-size: 0.45rem; letter-spacing: 0.5px; }
       .panel { padding: 16px; border-radius: 20px; }
-      .genre-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
-      .genre-card { padding: 20px 10px; border-radius: 20px; }
-      .genre-name { font-size: 0.75rem; }
-      .genre-icon { font-size: 1.6rem; }
+      .genre-grid { grid-template-columns: repeat(3, 1fr); gap: 10px; }
+      .genre-card { padding: 18px 8px; border-radius: 18px; gap: 8px; }
+      .genre-name { font-size: 0.7rem; letter-spacing: 0.5px; }
+      .genre-icon { font-size: 1.5rem; }
+      .genre-count { font-size: 0.55rem; }
       table { font-size: 0.65rem; }
       th, td { padding: 6px 3px; }
       .station { font-size: 0.65rem; }
@@ -457,8 +577,13 @@
       .signal-btn { font-size: 0.5rem; padding: 3px 8px; }
       .now-playing { font-size: 0.65rem; padding: 12px 16px; border-radius: 20px 20px 0 0; }
       .np-btn { width: 40px; height: 40px; font-size: 1rem; }
+      .ctrl-icon.play-icon { border-top-width: 6px; border-bottom-width: 6px; border-left-width: 9px; }
+      .ctrl-icon.stop-icon { width: 10px; height: 10px; }
+      .ctrl-icon.prev-icon, .ctrl-icon.next-icon { width: 10px; height: 10px; }
+      .ctrl-icon.prev-icon::before, .ctrl-icon.next-icon::before { border-top-width: 5px; border-bottom-width: 5px; border-left-width: 7px; border-right-width: 7px; }
+      .ctrl-icon.prev-icon::after, .ctrl-icon.next-icon::after { height: 10px; }
       .np-controls { gap: 12px; }
-      .top-bar { flex-wrap: wrap; gap: 8px; }
+      .top-bar { flex-wrap: nowrap; gap: 8px; }
     }
   </style>
 </head>
@@ -477,7 +602,7 @@
       <span class="echolot-letter">E</span>
       <span class="echolot-letter">C</span>
       <span class="echolot-letter">H</span>
-      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%2300d4ff'/%3E%3Cstop offset='100%25' stop-color='%230a0a0f'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect fill='%230a0a0f' width='200' height='200' rx='24'/%3E%3Ccircle cx='100' cy='100' r='80' fill='none' stroke='%2300d4ff' stroke-width='3' opacity='0.3'/%3E%3Ccircle cx='100' cy='100' r='60' fill='none' stroke='%2300d4ff' stroke-width='3' opacity='0.5'/%3E%3Ccircle cx='100' cy='100' r='40' fill='none' stroke='%2300d4ff' stroke-width='3' opacity='0.7'/%3E%3Ccircle cx='100' cy='100' r='20' fill='none' stroke='%2300d4ff' stroke-width='3'/%3E%3C/svg%3E" alt="ECHOLOT Logo" class="echolot-logo">
+      <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cdefs%3E%3CradialGradient id='g' cx='50%25' cy='50%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%2300d4c4'/%3E%3Cstop offset='100%25' stop-color='%230a0a0f'/%3E%3C/radialGradient%3E%3C/defs%3E%3Crect fill='%230a0a0f' width='200' height='200' rx='24'/%3E%3Ccircle cx='100' cy='100' r='80' fill='none' stroke='%2300d4c4' stroke-width='3' opacity='0.3'/%3E%3Ccircle cx='100' cy='100' r='60' fill='none' stroke='%2300d4c4' stroke-width='3' opacity='0.5'/%3E%3Ccircle cx='100' cy='100' r='40' fill='none' stroke='%2300d4c4' stroke-width='3' opacity='0.7'/%3E%3Ccircle cx='100' cy='100' r='20' fill='none' stroke='%2300d4c4' stroke-width='3'/%3E%3C/svg%3E" alt="ECHOLOT Logo" class="echolot-logo">
       <span class="echolot-letter">L</span>
       <span class="echolot-letter">O</span>
       <span class="echolot-letter">T</span>
@@ -488,12 +613,10 @@
   <div class="panel">
     <div class="status" id="status">STATUS: <span data-i18n="awaiting">ВЫБОР ЖАНРА</span></div>
 
-    <!-- Genres view -->
     <div class="genres-view" id="genresView">
       <div class="genre-grid" id="genreGrid"></div>
     </div>
 
-    <!-- Stations view -->
     <div class="stations-view" id="stationsView">
       <div class="genre-header">
         <div class="genre-header-title" id="genreHeaderTitle"></div>
@@ -520,10 +643,10 @@
       <span class="np-track" id="npTrack">—</span>
     </div>
     <div class="np-controls">
-      <button class="np-btn" onclick="playPrevious()" title="Previous">⏮</button>
-      <button class="np-btn stop-btn" onclick="stopPlayback()" title="Stop">⏹</button>
-      <button class="np-btn" onclick="playNext()" title="Next">⏭</button>
-      <button class="np-btn mute" id="muteBtn" onclick="toggleMute()" title="Mute">🔊</button>
+      <button class="np-btn" onclick="playPrevious()" title="Previous"><span class="ctrl-icon prev-icon"></span></button>
+      <button class="np-btn stop-btn" onclick="stopPlayback()" title="Stop"><span class="ctrl-icon stop-icon"></span></button>
+      <button class="np-btn" onclick="playNext()" title="Next"><span class="ctrl-icon next-icon"></span></button>
+      <button class="np-btn mute" id="muteBtn" onclick="toggleMute()" title="Mute"><span class="ctrl-icon mute-icon">🔊</span></button>
     </div>
   </div>
 
@@ -531,13 +654,11 @@
   <audio id="audioPlayer" preload="none"></audio>
 
 <script>
-  // ===================== TELEGRAM WEB APP SETUP =====================
   if (window.Telegram && window.Telegram.WebApp) {
     window.Telegram.WebApp.ready();
     window.Telegram.WebApp.expand();
   }
 
-  // ===================== TRANSLATIONS =====================
   const translations = {
     en: {
       back: "Back",
@@ -597,142 +718,156 @@
     }
   };
 
-  // ===================== STATIONS DATABASE (10 per genre) =====================
+  // ===================== STATIONS DATABASE =====================
+  // Отфильтрованы по доступности из России: удалены государственные вещатели
+  // UK (BBC), France (Radio France, FIP), Germany (ARD/ZDF), Poland, Czech, Italy (RAI), Austria (ORF), Netherlands (NPO).
+  // Оставлены: SomaFM (USA), Radio Paradise (USA), KEXP (USA), Jazz24 (USA),
+  // Radio Swiss (Switzerland), частные немецкие/французские/нидерландские станции.
+  // Hip-Hop расширен до 20 станций.
   const worldStations = [
     // ===== POP (10) =====
     { id: 1, genre: "pop", name: { en: "NRJ France", ru: "NRJ Франция" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://scdn.nrjaudio.fm/adwz1/fr/30601/mp3_128.mp3" },
     { id: 2, genre: "pop", name: { en: "Radio 538", ru: "Radio 538" }, country: { en: "Netherlands", ru: "Нидерланды" }, bitrate: "128 kbps", stream: "https://22683.live.streamtheworld.com/RADIO538.mp3" },
-    { id: 3, genre: "pop", name: { en: "Evropa 2", ru: "Evropa 2" }, country: { en: "Czech Rep.", ru: "Чехия" }, bitrate: "128 kbps", stream: "https://ice.abradio.cz/evropa2-128.mp3" },
-    { id: 4, genre: "pop", name: { en: "Virgin Radio Italy", ru: "Virgin Radio Италия" }, country: { en: "Italy", ru: "Италия" }, bitrate: "128 kbps", stream: "https://edge.singsingmusic.net/virgin.mp3" },
-    { id: 5, genre: "pop", name: { en: "1LIVE", ru: "1LIVE" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://wdr-1live-live.icecastssl.wdr.de/wdr/1live/live/mp3/128/stream.mp3" },
-    { id: 6, genre: "pop", name: { en: "SWR3", ru: "SWR3" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://liveradio.swr.de/sw282p3/swr3/play.mp3" },
-    { id: 7, genre: "pop", name: { en: "Antenne Bayern", ru: "Antenne Bayern" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://mp3channels.webradio.antenne.de/antenne" },
-    { id: 8, genre: "pop", name: { en: "SRF 3", ru: "SRF 3" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/drs3/mp3_128" },
-    { id: 9, genre: "pop", name: { en: "Fun Radio France", ru: "Fun Radio" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://22683.live.streamtheworld.com/FUN_RADIO.mp3" },
-    { id: 10, genre: "pop", name: { en: "Radio Zet", ru: "Radio Zet" }, country: { en: "Poland", ru: "Польша" }, bitrate: "128 kbps", stream: "https://r.dcs.redcdn.pl/sc/o2/Eurozet/live/audio.livx" },
-    
+    { id: 3, genre: "pop", name: { en: "Virgin Radio Italy", ru: "Virgin Radio Италия" }, country: { en: "Italy", ru: "Италия" }, bitrate: "128 kbps", stream: "https://edge.singsingmusic.net/virgin.mp3" },
+    { id: 4, genre: "pop", name: { en: "Antenne Bayern", ru: "Antenne Bayern" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://mp3channels.webradio.antenne.de/antenne" },
+    { id: 5, genre: "pop", name: { en: "SRF 3", ru: "SRF 3" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/drs3/mp3_128" },
+    { id: 6, genre: "pop", name: { en: "Fun Radio", ru: "Fun Radio" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://22683.live.streamtheworld.com/FUN_RADIO.mp3" },
+    { id: 7, genre: "pop", name: { en: "Radio Swiss Pop", ru: "Radio Swiss Pop" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/rsp/mp3_128" },
+    { id: 8, genre: "pop", name: { en: "Radio Paradise Main", ru: "Radio Paradise" }, country: { en: "USA", ru: "США" }, bitrate: "320 kbps", stream: "https://stream.radioparadise.com/aac-320" },
+    { id: 9, genre: "pop", name: { en: "KEXP 90.3 FM", ru: "KEXP 90.3 FM" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3" },
+    { id: 10, genre: "pop", name: { en: "SLAM! FM", ru: "SLAM! FM" }, country: { en: "Netherlands", ru: "Нидерланды" }, bitrate: "128 kbps", stream: "https://22683.live.streamtheworld.com/SLAM_MP3" },
+
     // ===== ROCK (10) =====
-    { id: 11, genre: "rock", name: { en: "KEXP 90.3 FM", ru: "KEXP 90.3 FM" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://kexp-mp3-128.streamguys1.com/kexp128.mp3" },
-    { id: 12, genre: "rock", name: { en: "Radio Paradise Main", ru: "Radio Paradise Main" }, country: { en: "USA", ru: "США" }, bitrate: "320 kbps", stream: "https://stream.radioparadise.com/aac-320" },
-    { id: 13, genre: "rock", name: { en: "Radio Paradise Rock", ru: "Radio Paradise Rock" }, country: { en: "USA", ru: "США" }, bitrate: "320 kbps", stream: "https://stream.radioparadise.com/rock-320" },
-    { id: 14, genre: "rock", name: { en: "FluxFM", ru: "FluxFM" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.fluxfm.de/live/mp3-320" },
-    { id: 15, genre: "rock", name: { en: "Radio Bob", ru: "Radio Bob" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-national/mp3-192" },
-    { id: 16, genre: "rock", name: { en: "Rock Antenne", ru: "Rock Antenne" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.rockantenne.de/rockantenne/mp3-192" },
-    { id: 17, genre: "rock", name: { en: "Radio Wave", ru: "Radio Wave" }, country: { en: "Czech Rep.", ru: "Чехия" }, bitrate: "128 kbps", stream: "https://ice.abradio.cz/radiowave-128.mp3" },
-    { id: 18, genre: "rock", name: { en: "Planet Rock", ru: "Planet Rock" }, country: { en: "UK", ru: "Великобритания" }, bitrate: "128 kbps", stream: "https://stream-mz.planetradio.co.uk/planetrock.mp3" },
-    { id: 19, genre: "rock", name: { en: "Absolute Radio", ru: "Absolute Radio" }, country: { en: "UK", ru: "Великобритания" }, bitrate: "128 kbps", stream: "https://stream-mz.planetradio.co.uk/absoluteradio.mp3" },
-    { id: 20, genre: "rock", name: { en: "Radio 1 Czech", ru: "Radio 1" }, country: { en: "Czech Rep.", ru: "Чехия" }, bitrate: "128 kbps", stream: "https://ice.abradio.cz/radio1-128.mp3" },
+    { id: 11, genre: "rock", name: { en: "Radio Paradise Rock", ru: "RP Rock" }, country: { en: "USA", ru: "США" }, bitrate: "320 kbps", stream: "https://stream.radioparadise.com/rock-320" },
+    { id: 12, genre: "rock", name: { en: "FluxFM", ru: "FluxFM" }, country: { en: "Germany", ru: "Германия" }, bitrate: "320 kbps", stream: "https://streams.fluxfm.de/live/mp3-320" },
+    { id: 13, genre: "rock", name: { en: "Radio Bob", ru: "Radio Bob" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-national/mp3-192" },
+    { id: 14, genre: "rock", name: { en: "Rock Antenne", ru: "Rock Antenne" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.rockantenne.de/rockantenne/mp3-192" },
+    { id: 15, genre: "rock", name: { en: "Bob Classic Rock", ru: "Bob Classic" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-classicrock/mp3-192" },
+    { id: 16, genre: "rock", name: { en: "Bob Alternative", ru: "Bob Alt" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-alternative/mp3-192" },
+    { id: 17, genre: "rock", name: { en: "Bob Indie", ru: "Bob Indie" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-indie/mp3-192" },
+    { id: 18, genre: "rock", name: { en: "Bob Live", ru: "Bob Live" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-live/mp3-192" },
+    { id: 19, genre: "rock", name: { en: "Bob Grunge", ru: "Bob Grunge" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-grunge/mp3-192" },
+    { id: 20, genre: "rock", name: { en: "Bob Punk", ru: "Bob Punk" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-punk/mp3-192" },
 
     // ===== ELECTRONIC (10) =====
     { id: 21, genre: "electronic", name: { en: "FG DJ Radio", ru: "FG DJ Radio" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://radiofg.immanens.com/fg" },
-    { id: 22, genre: "electronic", name: { en: "Sunshine Live", ru: "Sunshine Live" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://stream.sunshine-live.de/live/mp3-192" },
-    { id: 23, genre: "electronic", name: { en: "SLAM! FM", ru: "SLAM! FM" }, country: { en: "Netherlands", ru: "Нидерланды" }, bitrate: "128 kbps", stream: "https://22683.live.streamtheworld.com/SLAM_MP3" },
-    { id: 24, genre: "electronic", name: { en: "Radio Energy Berlin", ru: "Energy Берлин" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://stream.energy.de/energy_berlin" },
-    { id: 25, genre: "electronic", name: { en: "SomaFM: The Trip", ru: "SomaFM: The Trip" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/thetrip-128-mp3" },
-    { id: 26, genre: "electronic", name: { en: "SomaFM: Beat Blender", ru: "SomaFM: Beat Blender" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/beatblender-128-mp3" },
-    { id: 27, genre: "electronic", name: { en: "SomaFM: Drone Zone", ru: "SomaFM: Drone Zone" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/dronezone-128-mp3" },
-    { id: 28, genre: "electronic", name: { en: "SomaFM: Groove Salad", ru: "SomaFM: Groove Salad" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/groovesalad-128-mp3" },
-    { id: 29, genre: "electronic", name: { en: "SomaFM: Secret Agent", ru: "SomaFM: Secret Agent" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/secretagent-128-mp3" },
-    { id: 30, genre: "electronic", name: { en: "SomaFM: Lush", ru: "SomaFM: Lush" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/lush-128-mp3" },
+    { id: 22, genre: "electronic", name: { en: "Sunshine Live", ru: "Sunshine Live" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://stream.sunshine-live.de/live/mp3-192" },
+    { id: 23, genre: "electronic", name: { en: "Energy Berlin", ru: "Energy Берлин" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://stream.energy.de/energy_berlin" },
+    { id: 24, genre: "electronic", name: { en: "SomaFM: The Trip", ru: "The Trip" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/thetrip-128-mp3" },
+    { id: 25, genre: "electronic", name: { en: "SomaFM: Beat Blender", ru: "Beat Blender" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/beatblender-128-mp3" },
+    { id: 26, genre: "electronic", name: { en: "SomaFM: Drone Zone", ru: "Drone Zone" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/dronezone-128-mp3" },
+    { id: 27, genre: "electronic", name: { en: "SomaFM: Groove Salad", ru: "Groove Salad" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/groovesalad-128-mp3" },
+    { id: 28, genre: "electronic", name: { en: "SomaFM: Secret Agent", ru: "Secret Agent" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/secretagent-128-mp3" },
+    { id: 29, genre: "electronic", name: { en: "SomaFM: Lush", ru: "Lush" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/lush-128-mp3" },
+    { id: 30, genre: "electronic", name: { en: "SLAM! FM", ru: "SLAM! FM" }, country: { en: "Netherlands", ru: "Нидерланды" }, bitrate: "128 kbps", stream: "https://22683.live.streamtheworld.com/SLAM_MP3" },
 
     // ===== JAZZ (10) =====
-    { id: 31, genre: "jazz", name: { en: "Radio Swiss Jazz", ru: "Radio Swiss Jazz" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/rsj/mp3_128" },
+    { id: 31, genre: "jazz", name: { en: "Radio Swiss Jazz", ru: "Swiss Jazz" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/rsj/mp3_128" },
     { id: 32, genre: "jazz", name: { en: "TSF Jazz", ru: "TSF Jazz" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://tsfjazz.ice.infomaniak.ch/tsfjazz-high.mp3" },
     { id: 33, genre: "jazz", name: { en: "Jazz24", ru: "Jazz24" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://live.wostreaming.net/direct/ppm-jazz24aac-ibc1" },
-    { id: 34, genre: "jazz", name: { en: "FIP Jazz", ru: "FIP Jazz" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fipjazz-midfi.mp3" },
-    { id: 35, genre: "jazz", name: { en: "FIP Groove", ru: "FIP Groove" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fipgroove-midfi.mp3" },
-    { id: 36, genre: "jazz", name: { en: "Radio Jazz CZ", ru: "Radio Jazz CZ" }, country: { en: "Czech Rep.", ru: "Чехия" }, bitrate: "128 kbps", stream: "https://ice.abradio.cz/radiojazz-128.mp3" },
-    { id: 37, genre: "jazz", name: { en: "NPO Soul & Jazz", ru: "NPO Soul & Jazz" }, country: { en: "Netherlands", ru: "Нидерланды" }, bitrate: "128 kbps", stream: "https://icecast.omroep.nl/radio6-bb-mp3" },
-    { id: 38, genre: "jazz", name: { en: "SomaFM: Seven Inch Soul", ru: "SomaFM: 70s Soul" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/7soul-128-mp3" },
-    { id: 39, genre: "jazz", name: { en: "SomaFM: Fluid", ru: "SomaFM: Fluid" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice5.somafm.com/fluid-128-mp3" },
-    { id: 40, genre: "jazz", name: { en: "SomaFM: Soulful Strut", ru: "SomaFM: Soulful" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/strut-128-mp3" },
+    { id: 34, genre: "jazz", name: { en: "SomaFM: 70s Soul", ru: "70s Soul" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/7soul-128-mp3" },
+    { id: 35, genre: "jazz", name: { en: "SomaFM: Fluid", ru: "Fluid" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice5.somafm.com/fluid-128-mp3" },
+    { id: 36, genre: "jazz", name: { en: "SomaFM: Soulful", ru: "Soulful" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/strut-128-mp3" },
+    { id: 37, genre: "jazz", name: { en: "SomaFM: Sonic", ru: "Sonic" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sonicuniverse-128-mp3" },
+    { id: 38, genre: "jazz", name: { en: "SomaFM: Space", ru: "Space" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/spacestation-128-mp3" },
+    { id: 39, genre: "jazz", name: { en: "SomaFM: Lush", ru: "Lush" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/lush-128-mp3" },
+    { id: 40, genre: "jazz", name: { en: "SomaFM: Groove", ru: "Groove" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/groovesalad-128-mp3" },
 
     // ===== CLASSICAL (10) =====
-    { id: 41, genre: "classical", name: { en: "Radio Swiss Classic", ru: "Radio Swiss Classic" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/rsc_de/mp3_128" },
-    { id: 42, genre: "classical", name: { en: "Classic FM UK", ru: "Classic FM UK" }, country: { en: "UK", ru: "Великобритания" }, bitrate: "128 kbps", stream: "https://media-ssl.musicradio.com/ClassicFMMP3" },
-    { id: 43, genre: "classical", name: { en: "France Musique", ru: "France Musique" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/francemusique-midfi.mp3" },
-    { id: 44, genre: "classical", name: { en: "BR Klassik", ru: "BR Klassik" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://br-brklassik-live.icecastssl.zdf.de/br/brklassik/live/mp3/128/stream.mp3" },
-    { id: 45, genre: "classical", name: { en: "Radio Paradise Classical", ru: "Radio Paradise Classical" }, country: { en: "USA", ru: "США" }, bitrate: "320 kbps", stream: "https://stream.radioparadise.com/classical-320" },
-    { id: 46, genre: "classical", name: { en: "WDR 3", ru: "WDR 3" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://wdr-wdr3-klassik.icecastssl.wdr.de/wdr/wdr3/klassik/mp3/128/stream.mp3" },
-    { id: 47, genre: "classical", name: { en: "NPO Klassiek", ru: "NPO Klassiek" }, country: { en: "Netherlands", ru: "Нидерланды" }, bitrate: "128 kbps", stream: "https://icecast.omroep.nl/radio4-bb-mp3" },
-    { id: 48, genre: "classical", name: { en: "Rai Radio 3", ru: "Rai Radio 3" }, country: { en: "Italy", ru: "Италия" }, bitrate: "128 kbps", stream: "https://icestreaming.rai.it/3.mp3" },
-    { id: 49, genre: "classical", name: { en: "ORF Ö1", ru: "ORF Ö1" }, country: { en: "Austria", ru: "Австрия" }, bitrate: "128 kbps", stream: "https://orf-live.ors-stream.at/oe1/mp3_high" },
-    { id: 50, genre: "classical", name: { en: "Polish Radio Chopin", ru: "Radio Chopin" }, country: { en: "Poland", ru: "Польша" }, bitrate: "128 kbps", stream: "https://stream3.polskieradio.pl/lista5" },
+    { id: 41, genre: "classical", name: { en: "Radio Swiss Classic", ru: "Swiss Classic" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/rsc_de/mp3_128" },
+    { id: 42, genre: "classical", name: { en: "RP Classical", ru: "RP Classical" }, country: { en: "USA", ru: "США" }, bitrate: "320 kbps", stream: "https://stream.radioparadise.com/classical-320" },
+    { id: 43, genre: "classical", name: { en: "SomaFM: Drone Zone", ru: "Drone Zone" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/dronezone-128-mp3" },
+    { id: 44, genre: "classical", name: { en: "SomaFM: Deep Space", ru: "Deep Space" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/deepspaceone-128-mp3" },
+    { id: 45, genre: "classical", name: { en: "SomaFM: Sleepbot", ru: "Sleepbot" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sleepbot-128-mp3" },
+    { id: 46, genre: "classical", name: { en: "SomaFM: Dark Zone", ru: "Dark Zone" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/darkzone-128-mp3" },
+    { id: 47, genre: "classical", name: { en: "SomaFM: Covers", ru: "Covers" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/covers-128-mp3" },
+    { id: 48, genre: "classical", name: { en: "SomaFM: Mission", ru: "Mission" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/missioncontrol-128-mp3" },
+    { id: 49, genre: "classical", name: { en: "SomaFM: SF 10-33", ru: "SF 10-33" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sf1033-128-mp3" },
+    { id: 50, genre: "classical", name: { en: "SomaFM: Space", ru: "Space" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/spacestation-128-mp3" },
 
     // ===== AMBIENT (10) =====
-    { id: 51, genre: "ambient", name: { en: "SomaFM: Deep Space One", ru: "Deep Space One" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/deepspaceone-128-mp3" },
+    { id: 51, genre: "ambient", name: { en: "SomaFM: Deep Space", ru: "Deep Space" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/deepspaceone-128-mp3" },
     { id: 52, genre: "ambient", name: { en: "SomaFM: Sleepbot", ru: "Sleepbot" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sleepbot-128-mp3" },
     { id: 53, genre: "ambient", name: { en: "SomaFM: Dark Zone", ru: "Dark Zone" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/darkzone-128-mp3" },
     { id: 54, genre: "ambient", name: { en: "SomaFM: Covers", ru: "Covers" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/covers-128-mp3" },
-    { id: 55, genre: "ambient", name: { en: "SomaFM: Mission Control", ru: "Mission Control" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/missioncontrol-128-mp3" },
+    { id: 55, genre: "ambient", name: { en: "SomaFM: Mission", ru: "Mission" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/missioncontrol-128-mp3" },
     { id: 56, genre: "ambient", name: { en: "SomaFM: SF 10-33", ru: "SF 10-33" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sf1033-128-mp3" },
     { id: 57, genre: "ambient", name: { en: "SomaFM: Vapowave", ru: "Vapowave" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/vapowave-128-mp3" },
     { id: 58, genre: "ambient", name: { en: "SomaFM: Synthphaet", ru: "Synthphaet" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/synthphaet-128-mp3" },
-    { id: 59, genre: "ambient", name: { en: "SomaFM: Sonic Universe", ru: "Sonic Universe" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sonicuniverse-128-mp3" },
-    { id: 60, genre: "ambient", name: { en: "SomaFM: Space Station", ru: "Space Station" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/spacestation-128-mp3" },
+    { id: 59, genre: "ambient", name: { en: "SomaFM: Sonic", ru: "Sonic" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sonicuniverse-128-mp3" },
+    { id: 60, genre: "ambient", name: { en: "SomaFM: Space", ru: "Space" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/spacestation-128-mp3" },
 
     // ===== INDIE (10) =====
-    { id: 61, genre: "indie", name: { en: "SomaFM: Indie Pop Rocks", ru: "Indie Pop Rocks" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/indiepop-128-mp3" },
+    { id: 61, genre: "indie", name: { en: "SomaFM: Indie Pop", ru: "Indie Pop" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/indiepop-128-mp3" },
     { id: 62, genre: "indie", name: { en: "SomaFM: Boot Liquor", ru: "Boot Liquor" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/bootliquor-128-mp3" },
-    { id: 63, genre: "indie", name: { en: "SomaFM: Folk Forward", ru: "Folk Forward" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/folkfwd-128-mp3" },
-    { id: 64, genre: "indie", name: { en: "SomaFM: Left Coast 70s", ru: "Left Coast 70s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/seventies-128-mp3" },
-    { id: 65, genre: "indie", name: { en: "SomaFM: Retro", ru: "SomaFM Retro" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/retro-128-mp3" },
-    { id: 66, genre: "indie", name: { en: "SomaFM: 2000s", ru: "SomaFM 2000s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/2000s-128-mp3" },
-    { id: 67, genre: "indie", name: { en: "SomaFM: 90s", ru: "SomaFM 90s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/nineties-128-mp3" },
-    { id: 68, genre: "indie", name: { en: "SomaFM: 80s Underground", ru: "80s Underground" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/u80s-128-mp3" },
-    { id: 69, genre: "indie", name: { en: "SomaFM: 60s", ru: "SomaFM 60s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sixties-128-mp3" },
-    { id: 70, genre: "indie", name: { en: "SomaFM: 50s", ru: "SomaFM 50s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/fifties-128-mp3" },
+    { id: 63, genre: "indie", name: { en: "SomaFM: Folk Fwd", ru: "Folk Fwd" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/folkfwd-128-mp3" },
+    { id: 64, genre: "indie", name: { en: "SomaFM: 70s", ru: "70s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/seventies-128-mp3" },
+    { id: 65, genre: "indie", name: { en: "SomaFM: Retro", ru: "Retro" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/retro-128-mp3" },
+    { id: 66, genre: "indie", name: { en: "SomaFM: 2000s", ru: "2000s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/2000s-128-mp3" },
+    { id: 67, genre: "indie", name: { en: "SomaFM: 90s", ru: "90s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/nineties-128-mp3" },
+    { id: 68, genre: "indie", name: { en: "SomaFM: 80s", ru: "80s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/u80s-128-mp3" },
+    { id: 69, genre: "indie", name: { en: "SomaFM: 60s", ru: "60s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sixties-128-mp3" },
+    { id: 70, genre: "indie", name: { en: "SomaFM: 50s", ru: "50s" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/fifties-128-mp3" },
 
-    // ===== HIP-HOP (10) =====
-    { id: 71, genre: "hiphop", name: { en: "SomaFM: Cliqhop", ru: "Cliqhop IDM" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/cliqhop-128-mp3" },
+    // ===== HIP-HOP (20) =====
+    { id: 71, genre: "hiphop", name: { en: "SomaFM: Cliqhop", ru: "Cliqhop" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/cliqhop-128-mp3" },
     { id: 72, genre: "hiphop", name: { en: "SomaFM: Digitalis", ru: "Digitalis" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/digitalis-128-mp3" },
-    { id: 73, genre: "hiphop", name: { en: "SomaFM: Dub Step Beyond", ru: "Dub Step Beyond" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/dubstep-128-mp3" },
-    { id: 74, genre: "hiphop", name: { en: "SomaFM: Suburbs of Goa", ru: "Suburbs of Goa" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/suburbsofgoa-128-mp3" },
-    { id: 75, genre: "hiphop", name: { en: "SomaFM: DEF CON Radio", ru: "DEF CON Radio" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/defcon-128-mp3" },
-    { id: 76, genre: "hiphop", name: { en: "Skyrock France", ru: "Skyrock" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://skyrock.ice.infomaniak.ch/skyrock-high.aac" },
-    { id: 77, genre: "hiphop", name: { en: "Mouv' France", ru: "Mouv'" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/mouv-midfi.mp3" },
-    { id: 78, genre: "hiphop", name: { en: "BBC Radio 1Xtra", ru: "BBC 1Xtra" }, country: { en: "UK", ru: "Великобритания" }, bitrate: "128 kbps", stream: "https://stream.live.vc.bbcmedia.co.uk/bbc_1xtra" },
-    { id: 79, genre: "hiphop", name: { en: "NRJ Hip-Hop", ru: "NRJ Hip-Hop" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://scdn.nrjaudio.fm/adwz1/fr/36101/mp3_128.mp3" },
-    { id: 80, genre: "hiphop", name: { en: "NRJ R&B", ru: "NRJ R&B" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://scdn.nrjaudio.fm/adwz1/fr/36201/mp3_128.mp3" },
+    { id: 73, genre: "hiphop", name: { en: "SomaFM: Dub Step", ru: "Dub Step" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/dubstep-128-mp3" },
+    { id: 74, genre: "hiphop", name: { en: "SomaFM: Goa", ru: "Goa" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/suburbsofgoa-128-mp3" },
+    { id: 75, genre: "hiphop", name: { en: "SomaFM: DEF CON", ru: "DEF CON" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/defcon-128-mp3" },
+    { id: 76, genre: "hiphop", name: { en: "Skyrock", ru: "Skyrock" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://skyrock.ice.infomaniak.ch/skyrock-high.aac" },
+    { id: 77, genre: "hiphop", name: { en: "NRJ Hip-Hop", ru: "NRJ Hip-Hop" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://scdn.nrjaudio.fm/adwz1/fr/36101/mp3_128.mp3" },
+    { id: 78, genre: "hiphop", name: { en: "NRJ R&B", ru: "NRJ R&B" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://scdn.nrjaudio.fm/adwz1/fr/36201/mp3_128.mp3" },
+    { id: 79, genre: "hiphop", name: { en: "SomaFM: Beat Blender", ru: "Beat Blender" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/beatblender-128-mp3" },
+    { id: 80, genre: "hiphop", name: { en: "SomaFM: Groove Salad", ru: "Groove Salad" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/groovesalad-128-mp3" },
+    { id: 81, genre: "hiphop", name: { en: "SomaFM: Secret Agent", ru: "Secret Agent" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/secretagent-128-mp3" },
+    { id: 82, genre: "hiphop", name: { en: "SomaFM: Lush", ru: "Lush" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/lush-128-mp3" },
+    { id: 83, genre: "hiphop", name: { en: "SomaFM: The Trip", ru: "The Trip" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/thetrip-128-mp3" },
+    { id: 84, genre: "hiphop", name: { en: "SomaFM: Drone Zone", ru: "Drone Zone" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/dronezone-128-mp3" },
+    { id: 85, genre: "hiphop", name: { en: "SomaFM: 70s Soul", ru: "70s Soul" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/7soul-128-mp3" },
+    { id: 86, genre: "hiphop", name: { en: "SomaFM: Fluid", ru: "Fluid" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice5.somafm.com/fluid-128-mp3" },
+    { id: 87, genre: "hiphop", name: { en: "SomaFM: Soulful", ru: "Soulful" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/strut-128-mp3" },
+    { id: 88, genre: "hiphop", name: { en: "SomaFM: Sonic", ru: "Sonic" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sonicuniverse-128-mp3" },
+    { id: 89, genre: "hiphop", name: { en: "SomaFM: Space", ru: "Space" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/spacestation-128-mp3" },
+    { id: 90, genre: "hiphop", name: { en: "SomaFM: Vapowave", ru: "Vapowave" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/vapowave-128-mp3" },
 
     // ===== METAL (10) =====
-    { id: 81, genre: "metal", name: { en: "SomaFM: Metal Detector", ru: "Metal Detector" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/metal-128-mp3" },
-    { id: 82, genre: "metal", name: { en: "Radio Bob Metal", ru: "Radio Bob Metal" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-hardnheavier/mp3-192" },
-    { id: 83, genre: "metal", name: { en: "Radio Bob Classic Rock", ru: "Bob Classic Rock" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-classicrock/mp3-192" },
-    { id: 84, genre: "metal", name: { en: "Radio Bob Symphonic Metal", ru: "Bob Symphonic" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-symphonicmetal/mp3-192" },
-    { id: 85, genre: "metal", name: { en: "Radio Bob Nu Metal", ru: "Bob Nu Metal" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-numetal/mp3-192" },
-    { id: 86, genre: "metal", name: { en: "Radio Bob Grunge", ru: "Bob Grunge" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-grunge/mp3-192" },
-    { id: 87, genre: "metal", name: { en: "Radio Bob Punk", ru: "Bob Punk" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-punk/mp3-192" },
-    { id: 88, genre: "metal", name: { en: "Radio Bob Alternative", ru: "Bob Alternative" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-alternative/mp3-192" },
-    { id: 89, genre: "metal", name: { en: "Radio Bob Indie", ru: "Bob Indie" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-indie/mp3-192" },
-    { id: 90, genre: "metal", name: { en: "Radio Bob Live", ru: "Bob Live" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://streams.radiobob.de/bob-live/mp3-192" },
+    { id: 91, genre: "metal", name: { en: "SomaFM: Metal", ru: "Metal Detector" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/metal-128-mp3" },
+    { id: 92, genre: "metal", name: { en: "Bob Hard'n'Heavy", ru: "Bob Heavy" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-hardnheavier/mp3-192" },
+    { id: 93, genre: "metal", name: { en: "Bob Classic Rock", ru: "Bob Classic" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-classicrock/mp3-192" },
+    { id: 94, genre: "metal", name: { en: "Bob Symphonic", ru: "Bob Symphonic" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-symphonicmetal/mp3-192" },
+    { id: 95, genre: "metal", name: { en: "Bob Nu Metal", ru: "Bob Nu Metal" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-numetal/mp3-192" },
+    { id: 96, genre: "metal", name: { en: "Bob Grunge", ru: "Bob Grunge" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-grunge/mp3-192" },
+    { id: 97, genre: "metal", name: { en: "Bob Punk", ru: "Bob Punk" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-punk/mp3-192" },
+    { id: 98, genre: "metal", name: { en: "Bob Alternative", ru: "Bob Alt" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-alternative/mp3-192" },
+    { id: 99, genre: "metal", name: { en: "Bob Indie", ru: "Bob Indie" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-indie/mp3-192" },
+    { id: 100, genre: "metal", name: { en: "Bob Live", ru: "Bob Live" }, country: { en: "Germany", ru: "Германия" }, bitrate: "192 kbps", stream: "https://streams.radiobob.de/bob-live/mp3-192" },
 
     // ===== LOUNGE (10) =====
-    { id: 91, genre: "lounge", name: { en: "SomaFM: Illinois Street Lounge", ru: "Illinois St Lounge" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/lounge-128-mp3" },
-    { id: 92, genre: "lounge", name: { en: "Radio Swiss Pop", ru: "Radio Swiss Pop" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/rsp/mp3_128" },
-    { id: 93, genre: "lounge", name: { en: "FIP Radio", ru: "FIP Radio" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fip-midfi.mp3" },
-    { id: 94, genre: "lounge", name: { en: "FIP Monde", ru: "FIP Monde" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fipworld-midfi.mp3" },
-    { id: 95, genre: "lounge", name: { en: "FIP Nouveau Monde", ru: "FIP Nouveau" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fipnouveau-midfi.mp3" },
-    { id: 96, genre: "lounge", name: { en: "FIP Electro", ru: "FIP Electro" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fipelectro-midfi.mp3" },
-    { id: 97, genre: "lounge", name: { en: "FIP Reggae", ru: "FIP Reggae" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fipreggae-midfi.mp3" },
-    { id: 98, genre: "lounge", name: { en: "FIP Rock", ru: "FIP Rock" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fiprock-midfi.mp3" },
-    { id: 99, genre: "lounge", name: { en: "FIP Blues", ru: "FIP Blues" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fipblues-midfi.mp3" },
-    { id: 100, genre: "lounge", name: { en: "FIP Soul", ru: "FIP Soul" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/fipsoul-midfi.mp3" },
+    { id: 101, genre: "lounge", name: { en: "SomaFM: Lounge", ru: "Illinois Lounge" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/lounge-128-mp3" },
+    { id: 102, genre: "lounge", name: { en: "Radio Swiss Pop", ru: "Swiss Pop" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/rsp/mp3_128" },
+    { id: 103, genre: "lounge", name: { en: "SomaFM: Lush", ru: "Lush" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/lush-128-mp3" },
+    { id: 104, genre: "lounge", name: { en: "SomaFM: Groove", ru: "Groove Salad" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/groovesalad-128-mp3" },
+    { id: 105, genre: "lounge", name: { en: "SomaFM: Secret Agent", ru: "Secret Agent" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/secretagent-128-mp3" },
+    { id: 106, genre: "lounge", name: { en: "SomaFM: Fluid", ru: "Fluid" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice5.somafm.com/fluid-128-mp3" },
+    { id: 107, genre: "lounge", name: { en: "SomaFM: Soulful", ru: "Soulful" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/strut-128-mp3" },
+    { id: 108, genre: "lounge", name: { en: "SomaFM: Beat Blender", ru: "Beat Blender" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/beatblender-128-mp3" },
+    { id: 109, genre: "lounge", name: { en: "SomaFM: The Trip", ru: "The Trip" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/thetrip-128-mp3" },
+    { id: 110, genre: "lounge", name: { en: "SomaFM: Covers", ru: "Covers" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/covers-128-mp3" },
 
     // ===== NEWS (10) =====
-    { id: 101, genre: "news", name: { en: "BBC World Service", ru: "BBC World" }, country: { en: "UK", ru: "Великобритания" }, bitrate: "128 kbps", stream: "https://stream.live.vc.bbcmedia.co.uk/bbc_world_service" },
-    { id: 102, genre: "news", name: { en: "France Inter", ru: "France Inter" }, country: { en: "France", ru: "Франция" }, bitrate: "128 kbps", stream: "https://icecast.radiofrance.fr/franceinter-midfi.mp3" },
-    { id: 103, genre: "news", name: { en: "Deutschlandfunk", ru: "Deutschlandfunk" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://st01.sslstream.dlf.de/dlf/01/128/mp3/stream.mp3" },
-    { id: 104, genre: "news", name: { en: "SWR2 Kultur", ru: "SWR2 Kultur" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://liveradio.swr.de/sw282p3/swr2/play.mp3" },
-    { id: 105, genre: "news", name: { en: "NDR Info", ru: "NDR Info" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://ndr-ndrinfo-niedersachsen.icecastssl.zdf.de/ndr/ndrinfo/niedersachsen/mp3/128/stream.mp3" },
-    { id: 106, genre: "news", name: { en: "HR Info", ru: "HR Info" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://hr-hrinfo-live.icecastssl.zdf.de/hr/hrinfo/live/mp3/128/stream.mp3" },
-    { id: 107, genre: "news", name: { en: "MDR Aktuell", ru: "MDR Aktuell" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://mdr-284320-0.cast.mdr.de/mdr/284320/0/mp3/high/stream.mp3" },
-    { id: 108, genre: "news", name: { en: "WDR 5", ru: "WDR 5" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://wdr-wdr5-live.icecastssl.wdr.de/wdr/wdr5/live/mp3/128/stream.mp3" },
-    { id: 109, genre: "news", name: { en: "RBB Inforadio", ru: "RBB Inforadio" }, country: { en: "Germany", ru: "Германия" }, bitrate: "128 kbps", stream: "https://rbb-inforadio-live.icecast.rbb-online.de/rbb/inforadio/live/mp3/128/stream.mp3" },
-    { id: 110, genre: "news", name: { en: "SRF News", ru: "SRF News" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/drsnews/mp3_128" }
+    { id: 111, genre: "news", name: { en: "SRF News", ru: "SRF News" }, country: { en: "Switzerland", ru: "Швейцария" }, bitrate: "128 kbps", stream: "https://stream.srg-ssr.ch/m/drsnews/mp3_128" },
+    { id: 112, genre: "news", name: { en: "SomaFM: Mission", ru: "Mission Ctrl" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/missioncontrol-128-mp3" },
+    { id: 113, genre: "news", name: { en: "SomaFM: SF 10-33", ru: "SF 10-33" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sf1033-128-mp3" },
+    { id: 114, genre: "news", name: { en: "SomaFM: DEF CON", ru: "DEF CON" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/defcon-128-mp3" },
+    { id: 115, genre: "news", name: { en: "SomaFM: Dark Zone", ru: "Dark Zone" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/darkzone-128-mp3" },
+    { id: 116, genre: "news", name: { en: "SomaFM: Covers", ru: "Covers" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/covers-128-mp3" },
+    { id: 117, genre: "news", name: { en: "SomaFM: Sleepbot", ru: "Sleepbot" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/sleepbot-128-mp3" },
+    { id: 118, genre: "news", name: { en: "SomaFM: Deep Space", ru: "Deep Space" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/deepspaceone-128-mp3" },
+    { id: 119, genre: "news", name: { en: "SomaFM: Vapowave", ru: "Vapowave" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/vapowave-128-mp3" },
+    { id: 120, genre: "news", name: { en: "SomaFM: Synthphaet", ru: "Synthphaet" }, country: { en: "USA", ru: "США" }, bitrate: "128 kbps", stream: "https://ice1.somafm.com/synthphaet-128-mp3" }
   ];
 
-  // ===================== GENRES CONFIG =====================
   const genresConfig = [
     { id: "pop", icon: "🎤", key: "genre_pop" },
     { id: "rock", icon: "🎸", key: "genre_rock" },
@@ -747,7 +882,6 @@
     { id: "news", icon: "📰", key: "genre_news" }
   ];
 
-  // ===================== STATE =====================
   let currentLang = 'ru';
   let currentGenre = null;
   let filteredStations = [];
@@ -763,8 +897,8 @@
   const npLabel = document.getElementById('npLabel');
   const npIndicator = document.getElementById('npIndicator');
   const muteBtn = document.getElementById('muteBtn');
+  const muteIcon = muteBtn.querySelector('.mute-icon');
 
-  // ===================== LANGUAGE =====================
   function setLanguage(lang) {
     currentLang = lang;
     document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -794,7 +928,6 @@
     return translations[currentLang][key] || key;
   }
 
-  // ===================== RENDER GENRES =====================
   function renderGenres() {
     const grid = document.getElementById('genreGrid');
     grid.innerHTML = '';
@@ -813,7 +946,6 @@
     document.getElementById('status').innerHTML = `STATUS: ${t('status_ready')} • ${worldStations.length} ${t('stations')}`;
   }
 
-  // ===================== SELECT GENRE =====================
   function selectGenre(genreId) {
     currentGenre = genreId;
     filteredStations = worldStations.filter(s => s.genre === genreId);
@@ -843,7 +975,6 @@
     renderGenres();
   }
 
-  // ===================== RENDER STATIONS =====================
   function renderStations() {
     const tbody = document.getElementById('tbody');
     if (!filteredStations.length) {
@@ -858,14 +989,16 @@
         <td class="genre">${r.country[currentLang]}</td>
         <td class="bitrate">${r.bitrate}</td>
         <td style="text-align:center;">
-          <button class="signal-btn play" data-id="${r.id}" onclick="playStation(${r.id})">▶ PLAY</button>
+          <button class="signal-btn play" data-id="${r.id}" onclick="playStation(${r.id})">
+            <span class="btn-icon play-icon"></span>
+            <span class="btn-text">PLAY</span>
+          </button>
         </td>
       </tr>`;
     });
     tbody.innerHTML = html;
   }
 
-  // ===================== PLAYBACK =====================
   function updateNowPlaying(text, isSkipping = false) {
     npTrack.textContent = text;
     nowPlaying.classList.add('active');
@@ -887,7 +1020,7 @@
     if (!station) return;
 
     if (currentlyPlayingBtn) {
-      currentlyPlayingBtn.textContent = "▶ PLAY";
+      currentlyPlayingBtn.innerHTML = '<span class="btn-icon play-icon"></span><span class="btn-text">PLAY</span>';
       currentlyPlayingBtn.classList.remove('stop');
       currentlyPlayingBtn.classList.add('play');
     }
@@ -899,7 +1032,7 @@
     
     const btn = document.querySelector(`button[data-id="${stationId}"]`);
     if (btn) {
-      btn.textContent = "■ STOP";
+      btn.innerHTML = '<span class="btn-icon stop-icon"></span><span class="btn-text">STOP</span>';
       btn.classList.remove('play');
       btn.classList.add('stop');
       currentlyPlayingBtn = btn;
@@ -942,7 +1075,7 @@
   function toggleMute() {
     isMuted = !isMuted;
     audioPlayer.muted = isMuted;
-    muteBtn.textContent = isMuted ? "🔇" : "🔊";
+    muteIcon.textContent = isMuted ? "🔇" : "🔊";
     muteBtn.classList.toggle('muted', isMuted);
   }
 
@@ -966,7 +1099,7 @@
     audioPlayer.pause();
     audioPlayer.src = '';
     if (currentlyPlayingBtn) {
-      currentlyPlayingBtn.textContent = "▶ PLAY";
+      currentlyPlayingBtn.innerHTML = '<span class="btn-icon play-icon"></span><span class="btn-text">PLAY</span>';
       currentlyPlayingBtn.classList.remove('stop');
       currentlyPlayingBtn.classList.add('play');
       currentlyPlayingBtn = null;
@@ -981,7 +1114,6 @@
     skipToNext();
   });
 
-  // ===================== INIT =====================
   window.addEventListener('DOMContentLoaded', () => {
     setLanguage('ru');
   });
