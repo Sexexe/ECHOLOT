@@ -39,6 +39,8 @@
       --border: rgba(255,255,255,.05);
       --panel-height: 220px;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
+      --star-w: 18px;
+      --star-gap: 3mm;
     }
 
     * {
@@ -193,40 +195,80 @@
       border-radius: 16px;
       width: 70%;
       margin: 29px auto 0;
-      padding: 19px;
+      padding: 5mm;
       overflow: hidden;
-      text-align: center;
+      text-align: left;
       transition: all .4s cubic-bezier(.4,0,.2,1), background .3s ease;
     }
 
     .genre-list {
       display: flex;
       flex-wrap: nowrap;
-      gap: 4px;
-      justify-content: center;
+      justify-content: space-between;
       width: 100%;
       margin-bottom: 8px;
+      align-items: center;
     }
 
     .genre-item {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+      min-width: 0;
       background: transparent;
       border: none;
       color: var(--text-dim);
-      padding: 8px 2px;
-      font-size: .9rem;
+      padding: 8px 0;
+      font-size: clamp(0.45rem, 2.2vw, 0.9rem);
       cursor: pointer;
       font-weight: 400;
-      letter-spacing: 1px;
+      letter-spacing: clamp(0px, 0.5vw, 1px);
+      word-spacing: clamp(-2px, 0vw, 0px);
       text-transform: uppercase;
       transition: color .3s;
       font-family: 'Myriad', 'Arial', sans-serif;
-      text-align: center;
       white-space: nowrap;
     }
 
     .genre-item.active {
       color: var(--cyan);
       text-shadow: 0 0 10px var(--cyan-dim);
+    }
+
+    .genre-fav {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--star-w);
+      height: var(--star-w);
+      padding: 0;
+      margin-right: var(--star-gap);
+      cursor: pointer;
+      transition: all .3s ease;
+      flex-shrink: 0;
+    }
+
+    .genre-fav svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: var(--text-dim);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: all .3s ease;
+    }
+
+    .genre-fav.active svg {
+      stroke: var(--cyan);
+      fill: rgba(0,212,255,.1);
+      filter: drop-shadow(0 0 5px var(--cyan-glow)) drop-shadow(0 0 14px rgba(0,212,255,.35));
+    }
+
+    .genre-fav:hover svg {
+      stroke: var(--cyan);
+      filter: drop-shadow(0 0 5px var(--cyan-glow));
     }
 
     .install-btn-genre {
@@ -298,7 +340,7 @@
       width: 100%;
       border-collapse: collapse;
       font-size: .7rem;
-      table-layout: fixed;
+      table-layout: auto;
       margin: 0 auto;
     }
 
@@ -314,22 +356,74 @@
       font-family: 'Myriad', 'Arial', sans-serif;
     }
 
-    thead th:first-child { text-align: left; padding-left: 4px; }
-    thead th:last-child { text-align: right; width: 150px; padding-right: 0; }
+    thead th:first-child { text-align: left; padding-left: 0; }
+    thead th:last-child { text-align: right; padding-right: 0; }
 
     tbody tr {
-      border-bottom: 1px solid var(--border);
+      border-radius: 8px;
       transition: all .2s;
-      cursor: pointer;
     }
 
     tbody tr:hover { background: var(--cyan-dim); }
     tbody tr.selected { background: var(--cyan-dim); }
 
     td { padding: 10px 0; }
-    .station-col { text-align: left; padding-left: 4px; }
-    .signal-col { text-align: right; width: 150px; padding-right: 0; }
+    .station-col { text-align: left; padding-left: 0; }
+    .signal-col { text-align: right; padding-right: 0; }
+
+    .star-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: var(--star-w);
+      height: var(--star-w);
+      cursor: pointer;
+      vertical-align: middle;
+      transition: all .3s ease;
+      position: relative;
+      padding: 0;
+      margin-right: var(--star-gap);
+      flex-shrink: 0;
+    }
+
+    .star-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: var(--text-dim);
+      stroke-width: 1.5;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: all .3s ease;
+    }
+
+    .star-btn:hover svg {
+      stroke: var(--cyan);
+      filter: drop-shadow(0 0 4px rgba(0,212,255,.5));
+    }
+
+    .star-btn.favorite svg {
+      fill: var(--cyan);
+      stroke: var(--cyan);
+      filter: drop-shadow(0 0 5px var(--cyan-glow)) drop-shadow(0 0 10px rgba(0,212,255,.3));
+    }
+
+    .station-wrap {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: flex-start;
+      cursor: pointer;
+      line-height: 1.2;
+      vertical-align: middle;
+    }
+
     .station { font-weight: 300; font-size: .75rem; color: var(--text); }
+
+    .country-name {
+      font-size: calc(0.6em + 1pt);
+      color: var(--text-dim);
+      margin-top: 1px;
+    }
 
     .signal-btn {
       display: inline-flex;
@@ -342,8 +436,10 @@
       letter-spacing: 1.5px;
       cursor: pointer;
       transition: all .3s cubic-bezier(.4,0,.2,1);
-      border: 1px solid var(--border);
-      background: transparent;
+      border: 1px solid var(--cyan);
+      background: var(--cyan-dim);
+      color: var(--cyan);
+      box-shadow: 0 0 10px var(--cyan-glow);
       font-family: 'Myriad', 'Arial', sans-serif;
       text-transform: uppercase;
       position: relative;
@@ -363,9 +459,7 @@
 
     .signal-btn:hover::before { left: 100%; }
 
-    .signal-btn.play { color: var(--cyan); border-color: var(--cyan); }
-
-    .signal-btn.play:hover {
+    .signal-btn:hover {
       background: var(--cyan-dim);
       box-shadow: 0 0 15px var(--cyan-glow);
       transform: scale(1.05);
@@ -374,12 +468,14 @@
     .signal-btn.stop {
       color: var(--red);
       border-color: var(--red);
+      background: rgba(255,68,102,.1);
+      box-shadow: 0 0 10px rgba(255,68,102,.4);
       animation: livePulse 2s infinite;
     }
 
     .signal-btn.stop:hover {
-      background: rgba(255,68,102,.1);
-      box-shadow: 0 0 15px rgba(255,68,102,.4);
+      background: rgba(255,68,102,.15);
+      box-shadow: 0 0 15px rgba(255,68,102,.5);
     }
 
     @keyframes livePulse {
@@ -699,7 +795,11 @@
     .footer-link:hover { color: var(--cyan); }
 
     @media (max-width: 600px) {
-      :root { --panel-height: 200px; }
+      :root {
+        --panel-height: 200px;
+        --star-w: 14px;
+        --star-gap: 3mm;
+      }
       .header-container { height: 280px; margin-top: 0; }
       .core-wrapper { width: 200px; height: 200px; }
       .echolot-waves { width: 160px; height: 160px; }
@@ -708,9 +808,10 @@
       .wave-circle:nth-child(3) { width: 120px; height: 120px; }
       .wave-circle:nth-child(4) { width: 160px; height: 160px; }
       .logo-svg text { font-size: 18px !important; }
-      .main-block { width: 94%; margin-top: 8px; padding: 19px; }
+      .main-block { width: 94%; margin-top: 8px; padding: 5mm; }
       .genre-list { margin-bottom: 8px; }
-      .genre-item { font-size: .7rem; padding: 6px 1px; letter-spacing: .25px; }
+      .genre-item { font-size: .7rem; padding: 6px 0; letter-spacing: clamp(-1px, 0.3vw, 0.5px); word-spacing: clamp(-3px, 0vw, 0px); }
+      .genre-fav svg { width: 12px; height: 12px; }
       .install-btn-genre {
         width: 100%;
         margin: 8px auto 0;
@@ -721,8 +822,6 @@
       }
       .panel { padding: 0; }
       table { width: 100%; }
-      thead th:last-child { width: auto; padding-right: 0; }
-      .signal-col { width: auto; padding-right: 0; }
       .yandex-ad-wrapper { min-height: 90px; margin: 10px 0; }
       .eq-panel { padding: 10px 5px; gap: 5px; }
       .eq-group { gap: 4px; }
@@ -731,6 +830,7 @@
       input[type="range"] { max-width: 60px; }
       .remote { padding: 10px 15px 20px; gap: 12px; }
       .np-btn { width: 55px; height: 55px; }
+      .star-btn svg { width: 12px; height: 12px; }
     }
   </style>
 </head>
@@ -778,7 +878,7 @@
         <table>
           <thead>
             <tr>
-              <th onclick="sortTable('name')">Station ↕</th>
+              <th onclick="sortTable('name')">Station </th>
               <th>Signal</th>
             </tr>
           </thead>
@@ -869,6 +969,10 @@
       {name:"AIR FM Gold Delhi", genre:"Pop", country:"India", stream:"https://air.pc.cdn.bitgravity.com/air/live/pbaudio001/playlist.m3u8"},
       {name:"Old School HipHop", genre:"Pop", country:"USA", stream:"https://pureplay.cdnstream1.com/6009_128.mp3"},
       {name:"CKQB Ottawa", genre:"Pop", country:"Canada", stream:"https://live.leanstream.co/CKQBFM"},
+      {name:"Радио Монте-Карло", genre:"Pop", country:"Russia", stream:"https://montecarlo.hostingradio.ru/montecarlo128.mp3"},
+      {name:"Ретро FM 80-е", genre:"Pop", country:"Russia", stream:"https://retro80.hostingradio.ru/retro80-128.mp3"},
+      {name:"Ретро FM 90-е", genre:"Pop", country:"Russia", stream:"https://retro90.hostingradio.ru/retro90-128.mp3"},
+      {name:"Русское Радио", genre:"Pop", country:"Russia", stream:"https://rusradio.hostingradio.ru/rusradio128.mp3"},
       {name:"Record", genre:"Electro", country:"Russia", stream:"https://radiorecord.hostingradio.ru/rr_main96.aacp"},
       {name:"Record Deep", genre:"Electro", country:"Russia", stream:"https://radiorecord.hostingradio.ru/deep96.aacp"},
       {name:"Record Pirate Station", genre:"Electro", country:"Russia", stream:"https://radiorecord.hostingradio.ru/ps96.aacp"},
@@ -919,13 +1023,18 @@
       {name:"KXLU Los Angeles", genre:"Rock", country:"USA", stream:"https://kxlu.streamguys1.com/kxlu-hi"},
       {name:"CKRY Calgary", genre:"Rock", country:"Canada", stream:"https://live.leanstream.co/CKRYFM"},
       {name:"NPO Radio 2", genre:"Rock", country:"Netherlands", stream:"https://icecast.omroep.nl/radio2-bb-mp3"},
-      {name:"Record Rap Classics", genre:"Hip-Hop", country:"Russia", stream:"https://radiorecord.hostingradio.ru/rapclassics96.aacp"},
-      {name:"SomaFM: Cliqhop", genre:"Hip-Hop", country:"USA", stream:"https://ice1.somafm.com/cliqhop-128-mp3"},
-      {name:"SomaFM: Dub Step", genre:"Hip-Hop", country:"USA", stream:"https://ice1.somafm.com/dubstep-128-mp3"}
+      {name:"Record Rap Classics", genre:"RAP", country:"Russia", stream:"https://radiorecord.hostingradio.ru/rapclassics96.aacp"},
+      {name:"SomaFM: Cliqhop", genre:"RAP", country:"USA", stream:"https://ice1.somafm.com/cliqhop-128-mp3"},
+      {name:"SomaFM: Dub Step", genre:"RAP", country:"USA", stream:"https://ice1.somafm.com/dubstep-128-mp3"},
+      {name:"Маятник Фуко - Record", genre:"RAP", country:"Russia", stream:"https://radiorecord.hostingradio.ru/mf96.aacp"},
+      {name:"Black Rap - Record", genre:"RAP", country:"Russia", stream:"https://radiorecord.hostingradio.ru/yo96.aacp"},
+      {name:"Phonk - Record", genre:"RAP", country:"Russia", stream:"https://radiorecord.hostingradio.ru/phonk96.aacp"},
+      {name:"STUDIO 21", genre:"RAP", country:"Russia", stream:"https://stream.studio21.ru/studio2196.aacp"},
+      {name:"Trap - Record", genre:"RAP", country:"Russia", stream:"https://radiorecord.hostingradio.ru/trap96.aacp"}
     ];
 
     const stations = SHEKER_STATIONS;
-    const genres = ["Pop", "Electro", "Ambient", "Jazz", "Classic", "Rock", "Hip-Hop"];
+    const genres = ["Pop", "Electro", "Ambient", "Jazz", "Classic", "Rock", "RAP"];
     let currentGenre = "Pop";
     let filteredStations = [];
     let currentSort = {column: 'name', direction: 'asc'};
@@ -935,6 +1044,44 @@
     let audioCtx = null, analyser = null, sourceNode = null, bassFilter = null, trebleFilter = null, gainNode = null;
     let mediaRecorder = null, recordedChunks = [], isRecording = false;
     let vizActive = false, vizAnimId = null, threeScene = null, threeCamera = null, threeRenderer = null, threeControls = null, instancedMesh = null, particleCount = 30000, positions, velocities, masses, angularMoments, timeGlobal = 0;
+
+    let favoriteStations = [];
+    let chainLinkMode = false;
+
+    function loadFavorites() {
+      try {
+        const saved = localStorage.getItem('favoriteStations');
+        if (saved) favoriteStations = JSON.parse(saved);
+      } catch (e) { favoriteStations = []; }
+    }
+
+    function saveFavorites() {
+      try { localStorage.setItem('favoriteStations', JSON.stringify(favoriteStations)); }
+      catch (e) {}
+    }
+
+    function toggleFavorite(streamUrl) {
+      const idx = favoriteStations.indexOf(streamUrl);
+      if (idx > -1) favoriteStations.splice(idx, 1);
+      else favoriteStations.push(streamUrl);
+      saveFavorites();
+      render();
+      if (currentGenre === 'Favorites') {
+        const favStations = stations.filter(s => favoriteStations.includes(s.stream));
+        document.getElementById('status').textContent = `${favStations.length} FAVORITES • ★`;
+        if (favStations.length === 0) filterGenre('Pop');
+      }
+    }
+
+    function isFavorite(streamUrl) {
+      return favoriteStations.includes(streamUrl);
+    }
+
+    function getStarSVG() {
+      return `<svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>`;
+    }
 
     const audioPlayer = document.getElementById('audioPlayer');
     const trayText = document.getElementById('trayText');
@@ -958,9 +1105,7 @@
         gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 5);
       } catch (e) {
         if (fadeInterval) clearInterval(fadeInterval);
-        const targetVol = 0.3;
-        const duration = 5000;
-        const stepTime = 50;
+        const targetVol = 0.3, duration = 5000, stepTime = 50;
         const steps = duration / stepTime;
         let step = 0;
         audioPlayer.volume = 0;
@@ -974,10 +1119,7 @@
           const pct = Math.round(v * 100);
           volSlider.value = pct;
           volVal.textContent = pct + '%';
-          if (p >= 1) {
-            clearInterval(fadeInterval);
-            fadeInterval = null;
-          }
+          if (p >= 1) { clearInterval(fadeInterval); fadeInterval = null; }
         }, stepTime);
       }
     }
@@ -988,20 +1130,14 @@
         try {
           gainNode.gain.cancelScheduledValues(audioCtx.currentTime);
           gainNode.gain.setValueAtTime(v, audioCtx.currentTime);
-        } catch (e) {
-          audioPlayer.volume = v;
-        }
-      } else {
-        audioPlayer.volume = v;
-      }
+        } catch (e) { audioPlayer.volume = v; }
+      } else { audioPlayer.volume = v; }
     }
 
     function dismissOverlay() {
       if (!tapOverlay.classList.contains('hidden')) {
         tapOverlay.classList.add('hidden');
-        setTimeout(() => {
-          tapOverlay.style.display = 'none';
-        }, 400);
+        setTimeout(() => { tapOverlay.style.display = 'none'; }, 400);
       }
     }
 
@@ -1019,6 +1155,24 @@
       if (audioUnlocked) return;
       dismissOverlay();
       initAudioContext();
+
+      if (chainLinkMode && currentStationId) {
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().then(() => {
+            audioUnlocked = true;
+            removeAllUnlockListeners();
+            const p = audioPlayer.play();
+            if (p) p.then(() => fadeInVolume()).catch(() => {});
+          }).catch(() => {});
+        } else {
+          audioUnlocked = true;
+          removeAllUnlockListeners();
+          const p = audioPlayer.play();
+          if (p) p.then(() => fadeInVolume()).catch(() => {});
+        }
+        return;
+      }
+
       filterGenre("Pop");
       playStation(STATION_HITFM);
       const tryPlay = () => {
@@ -1046,12 +1200,8 @@
         const p = audioPlayer.play();
         if (p && typeof p.then === 'function') {
           p.then(tryPlay).catch(() => setTimeout(tryPlay, 100));
-        } else {
-          setTimeout(tryPlay, 100);
-        }
-      } else {
-        tryPlay();
-      }
+        } else { setTimeout(tryPlay, 100); }
+      } else { tryPlay(); }
     }
 
     function removeAllUnlockListeners() {
@@ -1061,23 +1211,43 @@
     }
 
     window.addEventListener('DOMContentLoaded', () => {
+      loadFavorites();
       renderGenres();
       initAudioContext();
       const urlParams = new URLSearchParams(window.location.search);
-      const stationParam = urlParams.get('station');
-      if (stationParam) {
-        const decoded = decodeURIComponent(stationParam);
+      const stationParameter = urlParams.get('station');
+
+      if (stationParameter) {
+        const decoded = decodeURIComponent(stationParameter);
         const found = stations.find(s => s.stream === decoded);
         if (found) {
+          chainLinkMode = true;
+          dismissOverlay();
           filterGenre(found.genre);
-          playStation(decoded);
+          currentStationId = decoded;
+          trayText.textContent = `${found.name} • ${found.country}`;
+          trayText.style.color = 'var(--cyan)';
+          trayIndicator.style.background = 'var(--cyan)';
+          localStorage.setItem('lastStation', decoded);
+          render();
+          if (audioCtx && audioCtx.state === 'suspended') {
+            audioCtx.resume().catch(() => {});
+          }
+          applyCurrentVolume();
+          const playPromise = audioPlayer.play();
+          if (playPromise) {
+            playPromise.then(() => {
+              audioUnlocked = true;
+              fadeInVolume();
+            }).catch(() => {});
+          }
         } else {
           filterGenre("Pop");
         }
       } else {
         filterGenre("Pop");
       }
-      render();
+
       window.addEventListener('pointerdown', fastUnlock, {passive: true, capture: true});
       window.addEventListener('touchstart', fastUnlock, {passive: true, capture: true});
       window.addEventListener('mousedown', fastUnlock, {capture: true});
@@ -1090,10 +1260,27 @@
     function renderGenres() {
       const list = document.getElementById('genreList');
       list.innerHTML = '';
-      genres.forEach(g => {
+
+      genres.forEach((g, index) => {
         const div = document.createElement('div');
         div.className = `genre-item ${g === currentGenre ? 'active' : ''}`;
-        div.textContent = g.toUpperCase();
+
+        if (index === 0) {
+          const favSpan = document.createElement('span');
+          favSpan.className = `genre-fav ${currentGenre === 'Favorites' ? 'active' : ''}`;
+          favSpan.innerHTML = getStarSVG();
+          favSpan.title = 'Favorites';
+          favSpan.onclick = (e) => {
+            e.stopPropagation();
+            filterGenre('Favorites');
+          };
+          div.appendChild(favSpan);
+        }
+
+        const textSpan = document.createElement('span');
+        textSpan.textContent = g.toUpperCase();
+        div.appendChild(textSpan);
+
         div.onclick = () => filterGenre(g);
         list.appendChild(div);
       });
@@ -1102,12 +1289,25 @@
     function filterGenre(genre) {
       currentGenre = genre;
       document.querySelectorAll('.genre-item').forEach(el => el.classList.remove('active'));
-      const items = document.querySelectorAll('.genre-item');
-      const idx = genres.indexOf(genre);
-      if (items[idx]) items[idx].classList.add('active');
-      filteredStations = stations.filter(s => s.genre === genre);
-      sortTable('name', false);
-      document.getElementById('status').textContent = `${filteredStations.length} STATIONS • ${genre.toUpperCase()}`;
+
+      if (genre === 'Favorites') {
+        const favItem = document.querySelector('.genre-fav');
+        if (favItem) favItem.classList.add('active');
+        filteredStations = stations.filter(s => favoriteStations.includes(s.stream));
+        sortTable('name', false);
+        document.getElementById('status').textContent = `${filteredStations.length} FAVORITES • ★`;
+      } else {
+        const items = [...document.querySelectorAll('.genre-item')];
+        const genreItem = items.find(el => {
+          const textSpan = el.querySelector('span:not(.genre-fav)');
+          return textSpan && textSpan.textContent.trim() === genre.toUpperCase();
+        });
+        if (genreItem) genreItem.classList.add('active');
+        filteredStations = stations.filter(s => s.genre === genre);
+        sortTable('name', false);
+        document.getElementById('status').textContent = `${filteredStations.length} STATIONS • ${genre.toUpperCase()}`;
+      }
+      render();
     }
 
     function sortTable(column, toggle = true) {
@@ -1127,15 +1327,23 @@
     function render() {
       const tbody = document.getElementById('tbody');
       if (!filteredStations.length) {
-        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;padding:30px;color:var(--text-dim)">No stations</td></tr>`;
+        const emptyMsg = currentGenre === 'Favorites'
+          ? 'No favorites yet — tap a ★ to add stations'
+          : 'No stations';
+        tbody.innerHTML = `<tr><td colspan="2" style="text-align:center;padding:30px;color:var(--text-dim)">${emptyMsg}</td></tr>`;
         return;
       }
       tbody.innerHTML = filteredStations.map(r => {
         const sel = r.stream === currentStationId;
+        const fav = isFavorite(r.stream);
+        const starClass = fav ? 'star-btn favorite' : 'star-btn';
         return `<tr class="${sel ? 'selected' : ''}">
-          <td class="station-col" onclick="playStation('${r.stream}')">
-            <span class="station">${r.name}</span><br>
-            <span style="font-size:0.6em;color:var(--text-dim)">${r.country}</span>
+          <td class="station-col">
+            <span class="${starClass}" onclick="event.stopPropagation(); toggleFavorite('${r.stream}')" title="${fav ? 'Remove from favorites' : 'Add to favorites'}">${getStarSVG()}</span>
+            <span class="station-wrap" onclick="playStation('${r.stream}')">
+              <span class="station">${r.name}</span>
+              <span class="country-name">${r.country}</span>
+            </span>
           </td>
           <td class="signal-col">
             ${sel ? '<button class="signal-btn stop" onclick="playStation(\'' + r.stream + '\')">LIVE</button>' : '<button class="signal-btn play" onclick="playStation(\'' + r.stream + '\')">TUNE</button>'}
@@ -1151,10 +1359,7 @@
         const original = btn.textContent;
         btn.textContent = '✓';
         btn.classList.add('copied');
-        setTimeout(() => {
-          btn.textContent = original;
-          btn.classList.remove('copied');
-        }, 1500);
+        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1500);
       }).catch(() => {
         const ta = document.createElement('textarea');
         ta.value = shareUrl;
@@ -1166,10 +1371,7 @@
         document.body.removeChild(ta);
         btn.textContent = '✓';
         btn.classList.add('copied');
-        setTimeout(() => {
-          btn.textContent = '🔗';
-          btn.classList.remove('copied');
-        }, 1500);
+        setTimeout(() => { btn.textContent = '🔗'; btn.classList.remove('copied'); }, 1500);
       });
     }
 
@@ -1195,18 +1397,13 @@
         gainNode.connect(analyser);
         analyser.connect(audioCtx.destination);
         startWaveVisualizer();
-      } catch (e) {
-        console.warn('Audio API error:', e);
-      }
+      } catch (e) { console.warn('Audio API error:', e); }
     }
 
     function startWaveVisualizer() {
       const data = new Uint8Array(analyser.frequencyBinCount);
       function animate() {
-        if (vizActive) {
-          requestAnimationFrame(animate);
-          return;
-        }
+        if (vizActive) { requestAnimationFrame(animate); return; }
         analyser.getByteFrequencyData(data);
         let sum = 0;
         for (let i = 0; i < data.length; i++) sum += data[i];
@@ -1233,10 +1430,7 @@
     }
 
     function updateVol(s) {
-      if (fadeInterval) {
-        clearInterval(fadeInterval);
-        fadeInterval = null;
-      }
+      if (fadeInterval) { clearInterval(fadeInterval); fadeInterval = null; }
       const v = parseInt(s.value);
       volVal.textContent = v + '%';
       applyCurrentVolume();
@@ -1267,12 +1461,12 @@
       trayText.style.color = 'var(--cyan)';
       trayIndicator.style.background = 'var(--cyan)';
       render();
-      const p = audioPlayer.play().catch(e => {
-        console.warn('Autoplay blocked', e);
-      });
-      stallTimer = setTimeout(() => {
-        if (audioPlayer.readyState < 3 && currentStationId === streamUrl) skipToNext();
-      }, 8000);
+      const p = audioPlayer.play().catch(e => { console.warn('Autoplay blocked', e); });
+      if (!chainLinkMode) {
+        stallTimer = setTimeout(() => {
+          if (audioPlayer.readyState < 3 && currentStationId === streamUrl) skipToNext();
+        }, 8000);
+      }
       localStorage.setItem('lastStation', streamUrl);
       return p;
     }
@@ -1280,10 +1474,7 @@
     function replayCurrent() {
       initAudioContext();
       if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
-      if (!audioPlayer.paused && currentStationId) {
-        audioPlayer.pause();
-        return;
-      }
+      if (!audioPlayer.paused && currentStationId) { audioPlayer.pause(); return; }
       if (currentStationId) audioPlayer.play().catch(() => {});
       else if (filteredStations.length > 0) playStation(filteredStations[0].stream);
     }
@@ -1312,9 +1503,7 @@
         sourceNode.connect(dest);
         mediaRecorder = new MediaRecorder(dest.stream);
         recordedChunks = [];
-        mediaRecorder.ondataavailable = e => {
-          if (e.data.size > 0) recordedChunks.push(e.data);
-        };
+        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
         mediaRecorder.onstop = () => {
           const blob = new Blob(recordedChunks, {type: 'audio/webm'});
           const a = document.createElement('a');
@@ -1334,10 +1523,7 @@
       trayText.textContent = "RECALIBRATING...";
       trayText.style.color = 'var(--yellow)';
       trayIndicator.style.background = 'var(--yellow)';
-      setTimeout(() => {
-        isAutoSkipping = false;
-        playNext();
-      }, 1500);
+      setTimeout(() => { isAutoSkipping = false; playNext(); }, 1500);
     }
 
     function stopPlayback() {
@@ -1364,13 +1550,11 @@
       if (fn) fn();
     }
 
-    audioPlayer.addEventListener('error', () => skipToNext());
+    audioPlayer.addEventListener('error', () => { if (!chainLinkMode) skipToNext(); });
 
     let touchStartX = 0;
     const panel = document.getElementById('stationsPanel');
-    panel.addEventListener('touchstart', e => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, {passive: true});
+    panel.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; }, {passive: true});
     panel.addEventListener('touchend', e => {
       const diff = e.changedTouches[0].screenX - touchStartX;
       if (Math.abs(diff) > 60) {
@@ -1382,18 +1566,12 @@
 
     document.getElementById('headerClickZone').addEventListener('click', async (e) => {
       const canvas = document.getElementById('viz-canvas');
-      if (vizActive && e.target !== canvas) {
-        closeVizAndExec(null);
-        return;
-      }
+      if (vizActive && e.target !== canvas) { closeVizAndExec(null); return; }
       if (!vizActive) {
         vizActive = true;
         canvas.style.display = 'block';
         document.querySelector('.core-wrapper').style.display = 'none';
-        if (typeof THREE === 'undefined') {
-          console.error('Three.js not loaded');
-          return;
-        }
+        if (typeof THREE === 'undefined') { console.error('Three.js not loaded'); return; }
         if (!threeRenderer) {
           threeScene = new THREE.Scene();
           const bg = 0x000000;
