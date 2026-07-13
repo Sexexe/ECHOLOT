@@ -3,79 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+  <title>MUSIC RADIO ONLINE</title>
+  <meta name="description" content="Free global music radio aggregator with 80+ verified stations. Ad-free, high quality streaming.">
   
-  <!-- SEO Meta Tags -->
-  <title>MUSIC RADIO ONLINE - Global Internet Radio Hub | Live Streaming</title>
-  <meta name="description" content="Free global music radio aggregator. Listen to 80+ verified stations from around the world live. Pop, electronic, jazz, rock, ambient. Ad-free, high quality streaming.">
-  <meta name="keywords" content="internet radio, online radio, live radio, music streaming, pop radio, electronic music, jazz radio, rock radio, ambient music, free radio">
-  <meta name="author" content="Music Radio Online">
-  <meta name="robots" content="index, follow">
-  
-  <!-- Google Verification -->
-  <meta name="google-site-verification" content="vbMjmX8Ia_TlIMoowtBUw1J1Rd2GoZw93aO5hr-zVLw"/>
-  
-  <!-- Open Graph / Facebook -->
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://sexexe.github.io/ECHOLOT/">
-  <meta property="og:title" content="MUSIC RADIO ONLINE - Global Internet Radio Hub">
-  <meta property="og:description" content="Free global music radio aggregator with 80+ verified stations. Pop, electronic, jazz, rock, ambient. Ad-free, high quality streaming.">
-  <meta property="og:image" content="https://sexexe.github.io/ECHOLOT/icon-192.png">
-  <meta property="og:image:width" content="192">
-  <meta property="og:image:height" content="192">
-  <meta property="og:site_name" content="Music Radio Online">
-  <meta property="og:locale" content="en_US">
-  
-  <!-- Twitter -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:url" content="https://sexexe.github.io/ECHOLOT/">
-  <meta name="twitter:title" content="MUSIC RADIO ONLINE - Global Internet Radio Hub">
-  <meta name="twitter:description" content="Free global music radio aggregator with 80+ verified stations. Pop, electronic, jazz, rock, ambient. Ad-free, high quality streaming.">
-  <meta name="twitter:image" content="https://sexexe.github.io/ECHOLOT/icon-192.png">
-  
-  <!-- Canonical URL -->
-  <link rel="canonical" href="https://sexexe.github.io/ECHOLOT/">
-  
-  <!-- PWA Manifest -->
-  <link rel="manifest" href="/ECHOLOT/manifest.json">
-  <meta name="theme-color" content="#000000">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Music Radio">
-  <link rel="apple-touch-icon" href="/ECHOLOT/icon-192.png">
-  <link rel="icon" href="/ECHOLOT/favicon.ico" type="image/x-icon">
-  
-  <!-- JSON-LD Structured Data -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    "name": "MUSIC RADIO ONLINE",
-    "description": "Global music radio aggregator with 80+ verified stations from around the world",
-    "url": "https://sexexe.github.io/ECHOLOT/",
-    "applicationCategory": "MultimediaApplication",
-    "operatingSystem": "All",
-    "offers": {
-      "@type": "Offer",
-      "price": "0",
-      "priceCurrency": "USD"
-    },
-    "featureList": [
-      "Live streaming radio",
-      "Multiple genres (Pop, Electronic, Jazz, Rock, Ambient, Classic, RAP)",
-      "80+ verified stations",
-      "Ad-free experience",
-      "High quality audio",
-      "No registration required",
-      "Free forever",
-      "Progressive Web App (PWA)"
-    ]
-  }
-  </script>
-
   <!-- VK Bridge -->
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   
-  <!-- Three.js for Visualization -->
+  <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
@@ -557,12 +491,69 @@
       border-color: var(--cyan);
       color: var(--cyan);
       background: var(--cyan-dim);
+      box-shadow: 0 0 8px var(--cyan-glow);
+      transform: scale(1.05);
+    }
+
+    .copy-btn:active {
+      transform: scale(0.95);
     }
 
     .copy-btn.copied {
       border-color: #4caf50;
       color: #4caf50;
       background: rgba(76,175,80,.15);
+    }
+
+    .vk-share-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text-dim);
+      cursor: pointer;
+      margin-left: 4px;
+      transition: all .3s ease;
+      vertical-align: middle;
+    }
+
+    .vk-share-btn svg {
+      width: 14px;
+      height: 14px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      transition: all .3s ease;
+    }
+
+    .vk-share-btn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: var(--cyan-dim);
+      box-shadow: 0 0 8px var(--cyan-glow);
+      transform: scale(1.05);
+    }
+
+    .vk-share-btn:hover svg {
+      filter: drop-shadow(0 0 4px var(--cyan-glow));
+    }
+
+    .vk-share-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 0 12px var(--cyan-glow);
+    }
+
+    .vk-share-btn.shared {
+      border-color: var(--cyan);
+      color: var(--cyan);
+      background: var(--cyan-dim);
+      box-shadow: 0 0 10px var(--cyan-glow);
     }
 
     .bottom-stack {
@@ -871,6 +862,9 @@
       .remote { padding: 10px 15px 20px; gap: 12px; }
       .np-btn { width: 55px; height: 55px; }
       .star-btn svg { width: 12px; height: 12px; }
+      .vk-share-btn svg { width: 12px; height: 12px; }
+      .copy-btn { width: 26px; height: 26px; }
+      .vk-share-btn { width: 26px; height: 26px; }
     }
   </style>
 </head>
@@ -1371,6 +1365,7 @@
         const sel = r.stream === currentStationId;
         const fav = isFavorite(r.stream);
         const starClass = fav ? 'star-btn favorite' : 'star-btn';
+        const shareIconSvg = `<svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>`;
         return `<tr class="${sel ? 'selected' : ''}">
           <td class="station-col">
             <span class="${starClass}" onclick="event.stopPropagation(); toggleFavorite('${r.stream}')" title="${fav ? 'Remove from favorites' : 'Add to favorites'}">${getStarSVG()}</span>
@@ -1381,14 +1376,16 @@
           </td>
           <td class="signal-col">
             ${sel ? '<button class="signal-btn stop" onclick="playStation(\'' + r.stream + '\')">LIVE</button>' : '<button class="signal-btn play" onclick="playStation(\'' + r.stream + '\')">TUNE</button>'}
-            <button class="copy-btn" onclick="copyShareLink(this,'${r.stream}')" title="Copy share link">🔗</button>
+            <button class="vk-share-btn" onclick="shareToVK(this,\'${r.stream}\')" title="Share to VK">${shareIconSvg}</button>
+            <button class="copy-btn" onclick="copyShareLink(this,\'${r.stream}\')" title="Copy share link">🔗</button>
           </td>
         </tr>`;
       }).join('');
     }
 
     function copyShareLink(btn, streamUrl) {
-      const shareUrl = window.location.origin + '/#station=' + encodeURIComponent(streamUrl);
+      const shareUrl = 'https://musicradio.online/#station=' + encodeURIComponent(streamUrl);
+      
       navigator.clipboard.writeText(shareUrl).then(() => {
         const original = btn.textContent;
         btn.textContent = '✓';
@@ -1407,6 +1404,35 @@
         btn.classList.add('copied');
         setTimeout(() => { btn.textContent = '🔗'; btn.classList.remove('copied'); }, 1500);
       });
+    }
+
+    function shareToVK(btn, streamUrl) {
+      const station = stations.find(s => s.stream === streamUrl);
+      const shareUrl = 'https://musicradio.online/#station=' + encodeURIComponent(streamUrl);
+      
+      if (window.vkBridge && vkBridge.supports('VKWebAppShare')) {
+        vkBridge.send('VKWebAppShare', {
+          link: shareUrl
+        }).then(() => {
+          btn.classList.add('shared');
+          setTimeout(() => btn.classList.remove('shared'), 1500);
+        }).catch(e => {
+          console.warn('VK Share error:', e);
+          fallbackVKShare(shareUrl, station, btn);
+        });
+      } else {
+        fallbackVKShare(shareUrl, station, btn);
+      }
+    }
+
+    function fallbackVKShare(shareUrl, station, btn) {
+      const title = station ? `🎵 ${station.name} - ${station.country}` : 'Music Radio Online';
+      const vkShareUrl = `https://vk.com/share.php?url=${encodeURIComponent(shareUrl)}&title=${encodeURIComponent(title)}`;
+      window.open(vkShareUrl, '_blank', 'width=600,height=400');
+      if (btn) {
+        btn.classList.add('shared');
+        setTimeout(() => btn.classList.remove('shared'), 1500);
+      }
     }
 
     function initAudioContext() {
