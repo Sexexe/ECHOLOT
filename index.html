@@ -2,8 +2,6 @@
 <html lang="en">
 <head>
   <meta name="google-site-verification" content="vbMjmX8Ia_TlIMoowtBUw1J1Rd2GoZw93aO5hr-zVLw"/>
-  <script type="text/javascript">(function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};m[i].l=1*new Date();for(var j=0;j<document.scripts.length;j++){if(document.scripts[j].src===r)return}k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})(window,document,'script','https://mc.yandex.ru/metrika/tag.js?id=109794099','ym');ym(109794099,'init',{ssr:true,webvisor:true,clickmap:true,ecommerce:"dataLayer",referrer:document.referrer,url:location.href,accurateTrackBounce:true,trackLinks:true});</script>
-  <noscript><div><img src="https://mc.yandex.ru/watch/109794099" style="position:absolute;left:-9999px;" alt=""/></div></noscript>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
   <title>MUSIC RADIO ONLINE live</title>
@@ -24,8 +22,10 @@
   <script type="application/ld+json" id="seo-schema"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <script>window.yaContextCb=window.yaContextCb||[]</script>
-  <script src="https://yandex.ru/ads/system/context.js" async></script>
+  
+  <!-- VK Bridge -->
+  <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+
   <style>
     :root {
       --bg: #0a0a0f;
@@ -512,18 +512,6 @@
       background: rgba(76,175,80,.15);
     }
 
-    .yandex-ad-wrapper {
-      width: 100%;
-      min-height: 120px;
-      margin: 15px 0;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      overflow: visible;
-      position: relative;
-      z-index: 5;
-    }
-
     .bottom-stack {
       position: fixed;
       bottom: 0;
@@ -822,7 +810,6 @@
       }
       .panel { padding: 0; }
       table { width: 100%; }
-      .yandex-ad-wrapper { min-height: 90px; margin: 10px 0; }
       .eq-panel { padding: 10px 5px; gap: 5px; }
       .eq-group { gap: 4px; }
       .eq-label { font-size: .4rem; }
@@ -889,17 +876,6 @@
           </tbody>
         </table>
       </div>
-    </div>
-    <div class="yandex-ad-wrapper">
-      <div id="yandex_rtb_R-A-19472441-8"></div>
-      <script>
-        window.yaContextCb.push(() => {
-          Ya.Context.AdvManager.render({
-            blockId: "R-A-19472441-8",
-            renderTo: "yandex_rtb_R-A-19472441-8"
-          });
-        });
-      </script>
     </div>
     <footer>
       MUSIC RADIO ONLINE<br>
@@ -1216,8 +1192,11 @@
       loadFavorites();
       renderGenres();
       initAudioContext();
+      
+      // ИСПРАВЛЕНО: Проверяем и hash, и query параметры для обратной совместимости
       const urlParams = new URLSearchParams(window.location.search);
-      const stationParameter = urlParams.get('station');
+      const hashParams = new URLSearchParams(window.location.hash.substring(1));
+      const stationParameter = hashParams.get('station') || urlParams.get('station');
 
       if (stationParameter) {
         const decoded = decodeURIComponent(stationParameter);
@@ -1356,8 +1335,10 @@
       }).join('');
     }
 
+    // ИСПРАВЛЕНО: Теперь используем hash (#) вместо query (?) для ссылок
+    // Google НЕ индексирует hash-части URL, что решает проблему дублей
     function copyShareLink(btn, streamUrl) {
-      const shareUrl = window.location.origin + '/?station=' + encodeURIComponent(streamUrl);
+      const shareUrl = window.location.origin + '/#station=' + encodeURIComponent(streamUrl);
       navigator.clipboard.writeText(shareUrl).then(() => {
         const original = btn.textContent;
         btn.textContent = '✓';
@@ -1737,6 +1718,11 @@
       });
     } else {
       if (installBtn) installBtn.style.display = 'none';
+    }
+    
+    // Инициализация VK Bridge (опционально, если нужно вызывать события сразу)
+    if (window.vkBridge) {
+      // window.vkBridge.send('VKWebAppInit');
     }
   </script>
 </body>
