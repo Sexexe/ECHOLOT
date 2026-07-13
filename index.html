@@ -1,30 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta name="google-site-verification" content="vbMjmX8Ia_TlIMoowtBUw1J1Rd2GoZw93aO5hr-zVLw"/>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-  <title>MUSIC RADIO ONLINE live</title>
-  <meta name="description" content="Global music radio hub MUSIC RADIO ONLINE. Listen to verified stations from around the world live. Ad-free, high quality.">
-  <meta property="og:title" content="MUSIC RADIO ONLINE live">
-  <meta property="og:description" content="Live radio hub with stations from around the world. Pop, electronic, jazz, rock. Listen free in high quality without ads.">
+  
+  <!-- SEO Meta Tags -->
+  <title>MUSIC RADIO ONLINE - Global Internet Radio Hub | Live Streaming</title>
+  <meta name="description" content="Free global music radio aggregator. Listen to 80+ verified stations from around the world live. Pop, electronic, jazz, rock, ambient. Ad-free, high quality streaming.">
+  <meta name="keywords" content="internet radio, online radio, live radio, music streaming, pop radio, electronic music, jazz radio, rock radio, ambient music, free radio">
+  <meta name="author" content="Music Radio Online">
+  <meta name="robots" content="index, follow">
+  
+  <!-- Google Verification -->
+  <meta name="google-site-verification" content="vbMjmX8Ia_TlIMoowtBUw1J1Rd2GoZw93aO5hr-zVLw"/>
+  
+  <!-- Open Graph / Facebook -->
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://musicradio.online">
+  <meta property="og:url" content="https://sexexe.github.io/ECHOLOT/">
+  <meta property="og:title" content="MUSIC RADIO ONLINE - Global Internet Radio Hub">
+  <meta property="og:description" content="Free global music radio aggregator with 80+ verified stations. Pop, electronic, jazz, rock, ambient. Ad-free, high quality streaming.">
+  <meta property="og:image" content="https://sexexe.github.io/ECHOLOT/icon-192.png">
+  <meta property="og:image:width" content="192">
+  <meta property="og:image:height" content="192">
+  <meta property="og:site_name" content="Music Radio Online">
   <meta property="og:locale" content="en_US">
-  <link rel="canonical" href="https://musicradio.online">
-  <link rel="manifest" href="/manifest.json">
+  
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://sexexe.github.io/ECHOLOT/">
+  <meta name="twitter:title" content="MUSIC RADIO ONLINE - Global Internet Radio Hub">
+  <meta name="twitter:description" content="Free global music radio aggregator with 80+ verified stations. Pop, electronic, jazz, rock, ambient. Ad-free, high quality streaming.">
+  <meta name="twitter:image" content="https://sexexe.github.io/ECHOLOT/icon-192.png">
+  
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://sexexe.github.io/ECHOLOT/">
+  
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="/ECHOLOT/manifest.json">
   <meta name="theme-color" content="#000000">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="musicradio.online">
-  <link rel="apple-touch-icon" href="/icon-192.png">
-  <link rel="icon" href="/favicon.ico" type="image/x-icon">
-  <script type="application/ld+json" id="seo-schema"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <meta name="apple-mobile-web-app-title" content="Music Radio">
+  <link rel="apple-touch-icon" href="/ECHOLOT/icon-192.png">
+  <link rel="icon" href="/ECHOLOT/favicon.ico" type="image/x-icon">
   
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    "name": "MUSIC RADIO ONLINE",
+    "description": "Global music radio aggregator with 80+ verified stations from around the world",
+    "url": "https://sexexe.github.io/ECHOLOT/",
+    "applicationCategory": "MultimediaApplication",
+    "operatingSystem": "All",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "USD"
+    },
+    "featureList": [
+      "Live streaming radio",
+      "Multiple genres (Pop, Electronic, Jazz, Rock, Ambient, Classic, RAP)",
+      "80+ verified stations",
+      "Ad-free experience",
+      "High quality audio",
+      "No registration required",
+      "Free forever",
+      "Progressive Web App (PWA)"
+    ]
+  }
+  </script>
+
   <!-- VK Bridge -->
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
+  
+  <!-- Three.js for Visualization -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
   <style>
     :root {
@@ -1193,7 +1246,6 @@
       renderGenres();
       initAudioContext();
       
-      // ИСПРАВЛЕНО: Проверяем и hash, и query параметры для обратной совместимости
       const urlParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
       const stationParameter = hashParams.get('station') || urlParams.get('station');
@@ -1335,8 +1387,6 @@
       }).join('');
     }
 
-    // ИСПРАВЛЕНО: Теперь используем hash (#) вместо query (?) для ссылок
-    // Google НЕ индексирует hash-части URL, что решает проблему дублей
     function copyShareLink(btn, streamUrl) {
       const shareUrl = window.location.origin + '/#station=' + encodeURIComponent(streamUrl);
       navigator.clipboard.writeText(shareUrl).then(() => {
@@ -1720,10 +1770,38 @@
       if (installBtn) installBtn.style.display = 'none';
     }
     
-    // Инициализация VK Bridge (опционально, если нужно вызывать события сразу)
-    if (window.vkBridge) {
-      // window.vkBridge.send('VKWebAppInit');
-    }
+    // VK Bridge Initialization
+    (function initVKBridge() {
+      function tryInit() {
+        if (!window.vkBridge) {
+          setTimeout(tryInit, 100);
+          return;
+        }
+        
+        vkBridge.send('VKWebAppInit')
+          .then(() => {
+            console.log('✅ VK Mini App инициализировано');
+          })
+          .catch((e) => {
+            console.error('❌ Ошибка инициализации VK:', e);
+          });
+          
+        vkBridge.subscribe((e) => {
+          const { type, data } = e.detail || {};
+          if (!type) return;
+          
+          switch (type) {
+            case 'VKWebAppChangeFragment':
+              break;
+            case 'VKWebAppClose':
+              vkBridge.send('VKWebAppClose', { status: 'success' });
+              break;
+          }
+        });
+      }
+      
+      tryInit();
+    })();
   </script>
 </body>
 </html>
