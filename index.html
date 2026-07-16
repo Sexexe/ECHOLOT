@@ -1122,6 +1122,52 @@
     let audioUnlocked = false;
     let fadeInterval = null;
 
+    // ==========================================
+    // 📢 БАННЕРНАЯ РЕКЛАМА VK BRIDGE
+    // ==========================================
+    let bannerAdShown = false;
+
+    /**
+     * Показ баннерной рекламы внизу экрана.
+     * Вызывается один раз при старте приложения.
+     * Согласно требованиям VK, повторные вызовы не требуются —
+     * платформа сама управляет обновлением баннера.
+     */
+    function showBannerAd() {
+      if (bannerAdShown) return;
+      if (!window.vkBridge) return;
+
+      vkBridge.send('VKWebAppShowBannerAd', {
+        banner_location: 'bottom'
+      })
+        .then((data) => {
+          if (data.result) {
+            bannerAdShown = true;
+            console.log('✅ Баннерная реклама отображена');
+          } else {
+            console.log('ℹ️ Баннер не отобразился (нет материалов)');
+          }
+        })
+        .catch((error) => {
+          console.warn('⚠️ Ошибка показа баннера:', error);
+        });
+    }
+
+    /**
+     * Ждёт готовности VK Bridge и показывает баннер через 2 секунды
+     * после инициализации (чтобы UI успел отрисоваться).
+     */
+    function initBannerAd() {
+      function tryShow() {
+        if (!window.vkBridge) {
+          setTimeout(tryShow, 200);
+          return;
+        }
+        setTimeout(showBannerAd, 2000);
+      }
+      tryShow();
+    }
+
     function fadeInVolume() {
       if (!gainNode || !audioCtx || audioCtx.state === 'closed') return;
       try {
@@ -1239,6 +1285,7 @@
       loadFavorites();
       renderGenres();
       initAudioContext();
+      initBannerAd(); // 🆕 Инициализация баннерной рекламы
       
       const urlParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
