@@ -23,6 +23,8 @@
       --cyan-dim: rgba(0,212,255,.15);
       --cyan-glow: rgba(0,212,255,.6);
       --red: #ff4466;
+      --yellow: #ffaa00;
+      --yellow-dim: rgba(255,170,0,.15);
       --border: rgba(255,255,255,.05);
       --panel-height: 220px;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -56,13 +58,14 @@
       width: 100%;
       height: 100%;
       z-index: 99999;
-      background: rgba(10,10,15,.92);
+      background: rgba(10,10,15,.95);
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: opacity .4s ease;
+      padding: 20px;
     }
 
     .tap-overlay.hidden {
@@ -73,18 +76,125 @@
     .tap-overlay-text {
       color: var(--cyan);
       font-family: 'Arial', sans-serif;
-      font-size: 1.2rem;
-      letter-spacing: 2px;
+      font-size: 1.4rem;
+      letter-spacing: 3px;
       text-transform: uppercase;
       animation: tapPulse 2s infinite;
+      margin-bottom: 8px;
     }
 
     .tap-overlay-sub {
-      color: var(--text-dim);
+      color: var(--text);
       font-family: 'Arial', sans-serif;
+      font-size: .85rem;
+      letter-spacing: 2px;
+      margin-bottom: 30px;
+      font-weight: 300;
+    }
+
+    /* 🆕 Стили для юридического предупреждения */
+    .legal-warning {
+      max-width: 420px;
+      width: 100%;
+      background: rgba(255, 170, 0, 0.08);
+      border: 1px solid rgba(255, 170, 0, 0.25);
+      border-radius: 14px;
+      padding: 18px 20px;
+      margin-top: 10px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(255, 170, 0, 0.1), inset 0 0 20px rgba(255, 170, 0, 0.03);
+      animation: legalFadeIn 1s ease-out 0.3s both;
+    }
+
+    @keyframes legalFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(15px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .legal-warning-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 170, 0, 0.15);
+    }
+
+    .legal-warning-icon {
+      font-size: 1.3rem;
+      filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.4));
+      flex-shrink: 0;
+      animation: iconPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes iconPulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.1); opacity: 0.85; }
+    }
+
+    .legal-warning-title {
+      color: var(--yellow);
+      font-size: .75rem;
+      letter-spacing: 1.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .legal-warning-text {
+      color: var(--text);
       font-size: .7rem;
-      letter-spacing: 1px;
+      line-height: 1.7;
+      letter-spacing: 0.5px;
+      font-family: 'Arial', sans-serif;
+      font-weight: 300;
+      text-align: left;
+    }
+
+    .legal-warning-text strong {
+      color: var(--yellow);
+      font-weight: 600;
+    }
+
+    .legal-warning-footer {
       margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 170, 0, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: .6rem;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .legal-warning-footer span {
+      opacity: 0.7;
+    }
+
+    .tap-hint {
+      color: var(--text-dim);
+      font-size: .65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-top: 25px;
+      animation: hintPulse 2.5s ease-in-out infinite;
+      font-family: 'Arial', sans-serif;
+    }
+
+    @keyframes hintPulse {
+      0%, 100% { opacity: 0.5; }
+      50% { opacity: 1; }
     }
 
     @keyframes tapPulse {
@@ -310,6 +420,72 @@
       width: 0;
       overflow: hidden;
       pointer-events: none;
+    }
+
+    .reward-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: .65rem;
+      font-weight: 700;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: all .3s cubic-bezier(.4,0,.2,1);
+      border: 1px solid #ffaa00;
+      background: rgba(255,170,0,.1);
+      color: #ffaa00;
+      font-family: 'Myriad', 'Arial', sans-serif;
+      text-transform: uppercase;
+      position: relative;
+      overflow: hidden;
+      margin: 10px auto 0;
+      width: 200px;
+      height: 36px;
+      line-height: 20px;
+      box-shadow: 0 0 10px rgba(255,170,0,.3);
+      animation: rewardPulse 3s infinite;
+    }
+
+    .reward-btn::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
+      transition: left .5s;
+    }
+
+    .reward-btn:hover::before { left: 100%; }
+
+    .reward-btn:hover {
+      background: rgba(255,170,0,.2);
+      box-shadow: 0 0 20px rgba(255,170,0,.5);
+      transform: scale(1.05);
+    }
+
+    .reward-btn.hidden {
+      opacity: 0;
+      height: 0;
+      padding: 0;
+      margin: 0;
+      border-width: 0;
+      width: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    @keyframes rewardPulse {
+      0%, 100% { box-shadow: 0 0 5px rgba(255,170,0,.2); }
+      50% { box-shadow: 0 0 15px rgba(255,170,0,.4); }
+    }
+
+    .reward-icon {
+      font-size: 1rem;
     }
 
     .panel {
@@ -832,6 +1008,35 @@
         --star-w: 14px;
         --star-gap: 3mm;
       }
+      .tap-overlay {
+        padding: 15px;
+      }
+      .tap-overlay-text {
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+      }
+      .tap-overlay-sub {
+        font-size: .7rem;
+        margin-bottom: 20px;
+      }
+      .legal-warning {
+        padding: 14px 16px;
+        max-width: 100%;
+      }
+      .legal-warning-title {
+        font-size: .65rem;
+      }
+      .legal-warning-text {
+        font-size: .65rem;
+        line-height: 1.6;
+      }
+      .legal-warning-footer {
+        font-size: .55rem;
+      }
+      .tap-hint {
+        font-size: .55rem;
+        margin-top: 18px;
+      }
       .header-container { height: 280px; margin-top: 0; }
       .core-wrapper { width: 200px; height: 200px; }
       .echolot-waves { width: 160px; height: 160px; }
@@ -848,6 +1053,14 @@
         width: 150px;
         margin: 8px auto 0;
         padding: 6px 16px;
+        font-size: .6rem;
+        height: 32px;
+        line-height: 20px;
+      }
+      .reward-btn {
+        width: 180px;
+        margin: 8px auto 0;
+        padding: 6px 14px;
         font-size: .6rem;
         height: 32px;
         line-height: 20px;
@@ -869,9 +1082,28 @@
   </style>
 </head>
 <body>
+  <!-- 🆕 СТАРТОВЫЙ ЭКРАН С ЮРИДИЧЕСКИМ ПРЕДУПРЕЖДЕНИЕМ -->
   <div class="tap-overlay" id="tapOverlay">
     <div class="tap-overlay-text">Tap to Play</div>
     <div class="tap-overlay-sub">MUSIC RADIO ONLINE</div>
+
+    <div class="legal-warning">
+      <div class="legal-warning-header">
+        <span class="legal-warning-icon">⚠️</span>
+        <span class="legal-warning-title">Важная информация</span>
+      </div>
+      <div class="legal-warning-text">
+        Запись радиоэфира в Российской Федерации разрешается, если она осуществляется <strong>исключительно для личного использования</strong> (ст. 1273 ГК РФ).
+        <br><br>
+        Запрещается распространение, публичное воспроизведение и коммерческое использование записей без согласия правообладателей.
+      </div>
+      <div class="legal-warning-footer">
+        <span>📻</span>
+        <span>Используя приложение, вы принимаете эти условия</span>
+      </div>
+    </div>
+
+    <div class="tap-hint">▼ Нажмите в любом месте ▼</div>
   </div>
 
   <div class="header-container" id="headerClickZone">
@@ -907,6 +1139,10 @@
     <div class="main-block">
       <div class="genre-list" id="genreList"></div>
       <button id="install-app-btn" class="install-btn-genre">DOWNLOAD APP</button>
+      <button id="reward-btn" class="reward-btn hidden">
+        <span class="reward-icon">🎁</span>
+        <span id="reward-btn-text">ПРЕМИУМ БОНУС</span>
+      </button>
       <div class="panel" id="stationsPanel">
         <div class="status" id="status">SELECT GENRE</div>
         <table>
@@ -952,7 +1188,7 @@
         <span class="eq-value" id="volVal">80%</span>
       </div>
       <div class="eq-group">
-        <span class="eq-label">TRBL</span>
+        <span class="eq-label">TREB</span>
         <input type="range" id="trebleSlider" min="-12" max="12" value="0" oninput="updateTreble(this)">
         <span class="eq-value" id="trebleVal">0dB</span>
       </div>
@@ -1073,10 +1309,27 @@
     let favoriteStations = [];
     let chainLinkMode = false;
 
+    let vkBridgeReady = false;
+    let interstitialReady = false;
+    let rewardReady = false;
+    let lastInterstitialTime = 0;
+    let genreSwitchCount = 0;
+    let stationPlayCount = 0;
+    let premiumActive = false;
+    let premiumExpiry = 0;
+    const INTERSTITIAL_COOLDOWN = 90000;
+    const GENRE_SWITCHES_FOR_AD = 3;
+    const STATIONS_FOR_INTERSTITIAL = 7;
+
     function loadFavorites() {
       try {
         const saved = localStorage.getItem('favoriteStations');
         if (saved) favoriteStations = JSON.parse(saved);
+        const savedPremium = localStorage.getItem('premiumExpiry');
+        if (savedPremium && parseInt(savedPremium) > Date.now()) {
+          premiumExpiry = parseInt(savedPremium);
+          premiumActive = true;
+        }
       } catch (e) { favoriteStations = []; }
     }
 
@@ -1122,50 +1375,190 @@
     let audioUnlocked = false;
     let fadeInterval = null;
 
-    // ==========================================
-    // 📢 БАННЕРНАЯ РЕКЛАМА VK BRIDGE
-    // ==========================================
-    let bannerAdShown = false;
+    function initAds() {
+      if (!window.vkBridge) {
+        setTimeout(initAds, 200);
+        return;
+      }
+      vkBridgeReady = true;
+      console.log('📢 Инициализация рекламы VK Bridge');
+      checkInterstitialAd();
+      checkRewardAd();
+      setTimeout(() => { showBannerAd(); }, 2000);
+      setInterval(() => {
+        if (!interstitialReady) checkInterstitialAd();
+        if (!rewardReady) checkRewardAd();
+      }, 60000);
+    }
 
-    /**
-     * Показ баннерной рекламы внизу экрана.
-     * Вызывается один раз при старте приложения.
-     * Согласно требованиям VK, повторные вызовы не требуются —
-     * платформа сама управляет обновлением баннера.
-     */
-    function showBannerAd() {
-      if (bannerAdShown) return;
-      if (!window.vkBridge) return;
-
-      vkBridge.send('VKWebAppShowBannerAd', {
-        banner_location: 'bottom'
-      })
+    function checkInterstitialAd() {
+      if (!window.vkBridge || !vkBridgeReady) return;
+      vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'interstitial' })
         .then((data) => {
           if (data.result) {
-            bannerAdShown = true;
-            console.log('✅ Баннерная реклама отображена');
-          } else {
-            console.log('ℹ️ Баннер не отобразился (нет материалов)');
+            interstitialReady = true;
+            console.log('✅ Межстраничная реклама готова');
           }
         })
+        .catch((error) => { console.warn('⚠️ Ошибка проверки:', error); });
+    }
+
+    function checkRewardAd() {
+      if (!window.vkBridge || !vkBridgeReady) return;
+      vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'reward' })
+        .then((data) => {
+          if (data.result) {
+            rewardReady = true;
+            console.log('✅ Реклама за вознаграждение готова');
+            showRewardButton();
+          } else {
+            hideRewardButton();
+          }
+        })
+        .catch((error) => { console.warn('⚠️ Ошибка проверки:', error); });
+    }
+
+    function showBannerAd() {
+      if (!window.vkBridge || !vkBridgeReady) return;
+      vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' })
+        .then((data) => {
+          if (data.result) console.log('✅ Баннерная реклама отображена');
+        })
+        .catch((error) => { console.warn('⚠️ Ошибка показа баннера:', error); });
+    }
+
+    function showInterstitialAd(callback) {
+      const now = Date.now();
+      if (now - lastInterstitialTime < INTERSTITIAL_COOLDOWN) {
+        if (callback) callback();
+        return;
+      }
+      if (chainLinkMode || premiumActive) {
+        if (callback) callback();
+        return;
+      }
+      if (!window.vkBridge || !vkBridgeReady) {
+        if (callback) callback();
+        return;
+      }
+      vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'interstitial' })
+        .then((data) => {
+          if (data.result) {
+            lastInterstitialTime = Date.now();
+            interstitialReady = false;
+            setTimeout(() => { checkInterstitialAd(); }, 2000);
+          }
+          if (callback) callback();
+        })
         .catch((error) => {
-          console.warn('⚠️ Ошибка показа баннера:', error);
+          console.warn('⚠️ Ошибка показа:', error);
+          if (callback) callback();
         });
     }
 
-    /**
-     * Ждёт готовности VK Bridge и показывает баннер через 2 секунды
-     * после инициализации (чтобы UI успел отрисоваться).
-     */
-    function initBannerAd() {
-      function tryShow() {
-        if (!window.vkBridge) {
-          setTimeout(tryShow, 200);
-          return;
+    function showRewardedAd() {
+      if (!window.vkBridge || !vkBridgeReady) return;
+      vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'reward' })
+        .then((checkData) => {
+          if (!checkData.result) {
+            trayText.textContent = '⚠️ РЕКЛАМА НЕДОСТУПНА';
+            trayText.style.color = 'var(--yellow)';
+            setTimeout(() => {
+              if (currentStationId) {
+                const station = stations.find(s => s.stream === currentStationId);
+                if (station) {
+                  trayText.textContent = `${station.name} • ${station.country}`;
+                  trayText.style.color = 'var(--cyan)';
+                }
+              }
+            }, 2000);
+            return;
+          }
+          vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' })
+            .then((data) => {
+              if (data.result) {
+                grantPremiumAccess(30);
+              }
+              rewardReady = false;
+              setTimeout(() => { checkRewardAd(); }, 2000);
+            })
+            .catch((error) => { console.warn('⚠️ Ошибка:', error); });
+        })
+        .catch((error) => { console.warn('⚠️ Ошибка:', error); });
+    }
+
+    function grantPremiumAccess(minutes) {
+      premiumActive = true;
+      premiumExpiry = Date.now() + (minutes * 60 * 1000);
+      try { localStorage.setItem('premiumExpiry', premiumExpiry.toString()); } catch (e) {}
+      updatePremiumStatus();
+      trayText.textContent = `🎁 ПРЕМИУМ: ${minutes} МИН • БЕЗ РЕКЛАМЫ`;
+      trayText.style.color = '#ffaa00';
+      trayIndicator.style.background = '#ffaa00';
+      setTimeout(() => {
+        if (currentStationId) {
+          const station = stations.find(s => s.stream === currentStationId);
+          if (station) {
+            trayText.textContent = `${station.name} • ${station.country}`;
+            trayText.style.color = 'var(--cyan)';
+            trayIndicator.style.background = 'var(--cyan)';
+          }
         }
-        setTimeout(showBannerAd, 2000);
+      }, 3000);
+    }
+
+    function updatePremiumStatus() {
+      const btn = document.getElementById('reward-btn');
+      const btnText = document.getElementById('reward-btn-text');
+      if (!btn || !btnText) return;
+      if (premiumActive && Date.now() < premiumExpiry) {
+        const remaining = Math.ceil((premiumExpiry - Date.now()) / 60000);
+        btnText.textContent = `ПРЕМИУМ: ${remaining} МИН`;
+        btn.style.borderColor = '#4caf50';
+        btn.style.color = '#4caf50';
+        btn.style.background = 'rgba(76,175,80,.1)';
+        btn.style.boxShadow = '0 0 10px rgba(76,175,80,.3)';
+        btn.style.animation = 'none';
+      } else {
+        premiumActive = false;
+        btnText.textContent = 'ПРЕМИУМ БОНУС';
+        btn.style.borderColor = '#ffaa00';
+        btn.style.color = '#ffaa00';
+        btn.style.background = 'rgba(255,170,0,.1)';
+        btn.style.boxShadow = '0 0 10px rgba(255,170,0,.3)';
+        btn.style.animation = 'rewardPulse 3s infinite';
       }
-      tryShow();
+    }
+
+    function showRewardButton() {
+      const btn = document.getElementById('reward-btn');
+      if (btn) { btn.classList.remove('hidden'); updatePremiumStatus(); }
+    }
+
+    function hideRewardButton() {
+      const btn = document.getElementById('reward-btn');
+      if (btn) btn.classList.add('hidden');
+    }
+
+    function checkAndShowInterstitial(trigger) {
+      if (premiumActive && Date.now() < premiumExpiry) return;
+      else if (premiumActive && Date.now() >= premiumExpiry) {
+        premiumActive = false;
+        try { localStorage.removeItem('premiumExpiry'); } catch (e) {}
+      }
+      if (trigger === 'genre') {
+        genreSwitchCount++;
+        if (genreSwitchCount >= GENRE_SWITCHES_FOR_AD) {
+          genreSwitchCount = 0;
+          showInterstitialAd();
+        }
+      } else if (trigger === 'station') {
+        stationPlayCount++;
+        if (stationPlayCount >= STATIONS_FOR_INTERSTITIAL) {
+          stationPlayCount = 0;
+          showInterstitialAd();
+        }
+      }
     }
 
     function fadeInVolume() {
@@ -1285,7 +1678,7 @@
       loadFavorites();
       renderGenres();
       initAudioContext();
-      initBannerAd(); // 🆕 Инициализация баннерной рекламы
+      initAds();
       
       const urlParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -1330,6 +1723,8 @@
       window.addEventListener('scroll', fastUnlock, {passive: true, once: true, capture: true});
       window.addEventListener('wheel', fastUnlock, {passive: true, once: true, capture: true});
       window.addEventListener('keydown', fastUnlock, {once: true, capture: true});
+
+      setInterval(updatePremiumStatus, 30000);
     });
 
     function renderGenres() {
@@ -1362,6 +1757,10 @@
     }
 
     function filterGenre(genre) {
+      if (currentGenre !== genre && !chainLinkMode) {
+        checkAndShowInterstitial('genre');
+      }
+
       currentGenre = genre;
       document.querySelectorAll('.genre-item, .genre-fav').forEach(el => el.classList.remove('active'));
 
@@ -1432,7 +1831,6 @@
 
     function copyShareLink(btn, streamUrl) {
       const shareUrl = 'https://musicradio.online/#station=' + encodeURIComponent(streamUrl);
-      
       navigator.clipboard.writeText(shareUrl).then(() => {
         const original = btn.textContent;
         btn.textContent = '✓';
@@ -1456,20 +1854,12 @@
     function shareToVK(btn, streamUrl) {
       const station = stations.find(s => s.stream === streamUrl);
       const shareUrl = 'https://musicradio.online/#station=' + encodeURIComponent(streamUrl);
-      
       if (window.vkBridge && vkBridge.supports('VKWebAppShare')) {
-        vkBridge.send('VKWebAppShare', {
-          link: shareUrl
-        }).then(() => {
+        vkBridge.send('VKWebAppShare', { link: shareUrl }).then(() => {
           btn.classList.add('shared');
           setTimeout(() => btn.classList.remove('shared'), 1500);
-        }).catch(e => {
-          console.warn('VK Share error:', e);
-          fallbackVKShare(shareUrl, station, btn);
-        });
-      } else {
-        fallbackVKShare(shareUrl, station, btn);
-      }
+        }).catch(e => { fallbackVKShare(shareUrl, station, btn); });
+      } else { fallbackVKShare(shareUrl, station, btn); }
     }
 
     function fallbackVKShare(shareUrl, station, btn) {
@@ -1558,6 +1948,9 @@
     function playStation(streamUrl) {
       const station = stations.find(s => s.stream === streamUrl);
       if (!station) return;
+      if (currentStationId && currentStationId !== streamUrl) {
+        checkAndShowInterstitial('station');
+      }
       initAudioContext();
       if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
       if (stallTimer) clearTimeout(stallTimer);
@@ -1843,26 +2236,18 @@
       if (installBtn) installBtn.style.display = 'none';
     }
     
-    // VK Bridge Initialization
     (function initVKBridge() {
       function tryInit() {
         if (!window.vkBridge) {
           setTimeout(tryInit, 100);
           return;
         }
-        
         vkBridge.send('VKWebAppInit')
-          .then(() => {
-            console.log('✅ VK Mini App инициализировано');
-          })
-          .catch((e) => {
-            console.error('❌ Ошибка инициализации VK:', e);
-          });
-          
+          .then(() => { console.log('✅ VK Mini App инициализировано'); })
+          .catch((e) => { console.error('❌ Ошибка инициализации VK:', e); });
         vkBridge.subscribe((e) => {
           const { type, data } = e.detail || {};
           if (!type) return;
-          
           switch (type) {
             case 'VKWebAppChangeFragment':
               break;
@@ -1872,9 +2257,34 @@
           }
         });
       }
-      
       tryInit();
     })();
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const rewardBtn = document.getElementById('reward-btn');
+      if (rewardBtn) {
+        rewardBtn.addEventListener('click', () => {
+          if (!premiumActive || Date.now() >= premiumExpiry) {
+            showRewardedAd();
+          } else {
+            const remaining = Math.ceil((premiumExpiry - Date.now()) / 60000);
+            trayText.textContent = `ПРЕМИУМ АКТИВЕН: ${remaining} МИН`;
+            trayText.style.color = '#4caf50';
+            trayIndicator.style.background = '#4caf50';
+            setTimeout(() => {
+              if (currentStationId) {
+                const station = stations.find(s => s.stream === currentStationId);
+                if (station) {
+                  trayText.textContent = `${station.name} • ${station.country}`;
+                  trayText.style.color = 'var(--cyan)';
+                  trayIndicator.style.background = 'var(--cyan)';
+                }
+              }
+            }, 2000);
+          }
+        });
+      }
+    });
   </script>
 </body>
 </html>
