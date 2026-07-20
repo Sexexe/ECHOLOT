@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
@@ -107,14 +107,8 @@
     }
 
     @keyframes legalFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(15px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
+      from { opacity: 0; transform: translateY(15px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .legal-warning-header {
@@ -177,9 +171,7 @@
       font-family: 'Arial', sans-serif;
     }
 
-    .legal-warning-footer span {
-      opacity: 0.7;
-    }
+    .legal-warning-footer span { opacity: 0.7; }
 
     .tap-hint {
       color: var(--text-dim);
@@ -483,9 +475,7 @@
       50% { box-shadow: 0 0 15px rgba(255,170,0,.4); }
     }
 
-    .reward-icon {
-      font-size: 1rem;
-    }
+    .reward-icon { font-size: 1rem; }
 
     .panel {
       min-height: 200px;
@@ -645,47 +635,12 @@
       50% { box-shadow: 0 0 12px rgba(255,68,102,.5); }
     }
 
-    .copy-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--text-dim);
-      font-size: .7rem;
-      cursor: pointer;
-      margin-left: 4px;
-      transition: all .3s ease;
-      vertical-align: middle;
-    }
-
-    .copy-btn:hover {
-      border-color: var(--cyan);
-      color: var(--cyan);
-      background: var(--cyan-dim);
-      box-shadow: 0 0 8px var(--cyan-glow);
-      transform: scale(1.05);
-    }
-
-    .copy-btn:active {
-      transform: scale(0.95);
-    }
-
-    .copy-btn.copied {
-      border-color: #4caf50;
-      color: #4caf50;
-      background: rgba(76,175,80,.15);
-    }
-
     .vk-share-btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       border-radius: 50%;
       border: 1px solid var(--border);
       background: transparent;
@@ -697,8 +652,8 @@
     }
 
     .vk-share-btn svg {
-      width: 14px;
-      height: 14px;
+      width: 16px;
+      height: 16px;
       fill: none;
       stroke: currentColor;
       stroke-width: 2;
@@ -1007,35 +962,14 @@
         --star-w: 14px;
         --star-gap: 3mm;
       }
-      .tap-overlay {
-        padding: 15px;
-      }
-      .tap-overlay-text {
-        font-size: 1.1rem;
-        letter-spacing: 2px;
-      }
-      .tap-overlay-sub {
-        font-size: .7rem;
-        margin-bottom: 20px;
-      }
-      .legal-warning {
-        padding: 14px 16px;
-        max-width: 100%;
-      }
-      .legal-warning-title {
-        font-size: .65rem;
-      }
-      .legal-warning-text {
-        font-size: .65rem;
-        line-height: 1.6;
-      }
-      .legal-warning-footer {
-        font-size: .55rem;
-      }
-      .tap-hint {
-        font-size: .55rem;
-        margin-top: 18px;
-      }
+      .tap-overlay { padding: 15px; }
+      .tap-overlay-text { font-size: 1.1rem; letter-spacing: 2px; }
+      .tap-overlay-sub { font-size: .7rem; margin-bottom: 20px; }
+      .legal-warning { padding: 14px 16px; max-width: 100%; }
+      .legal-warning-title { font-size: .65rem; }
+      .legal-warning-text { font-size: .65rem; line-height: 1.6; }
+      .legal-warning-footer { font-size: .55rem; }
+      .tap-hint { font-size: .55rem; margin-top: 18px; }
       .header-container { height: 280px; margin-top: 0; }
       .core-wrapper { width: 200px; height: 200px; }
       .echolot-waves { width: 160px; height: 160px; }
@@ -1048,22 +982,8 @@
       .genre-list { margin-bottom: 8px; }
       .genre-item { font-size: .7rem; padding: 6px 0; letter-spacing: clamp(-1px, 0.3vw, 0.5px); word-spacing: clamp(-3px, 0vw, 0px); }
       .genre-fav svg { width: 12px; height: 12px; }
-      .install-btn-genre {
-        width: 150px;
-        margin: 8px auto 0;
-        padding: 6px 16px;
-        font-size: .6rem;
-        height: 32px;
-        line-height: 20px;
-      }
-      .reward-btn {
-        width: 180px;
-        margin: 8px auto 0;
-        padding: 6px 14px;
-        font-size: .6rem;
-        height: 32px;
-        line-height: 20px;
-      }
+      .install-btn-genre { width: 150px; margin: 8px auto 0; padding: 6px 16px; font-size: .6rem; height: 32px; line-height: 20px; }
+      .reward-btn { width: 180px; margin: 8px auto 0; padding: 6px 14px; font-size: .6rem; height: 32px; line-height: 20px; }
       .panel { padding: 0; }
       table { width: 100%; }
       .eq-panel { padding: 10px 5px; gap: 5px; }
@@ -1074,9 +994,8 @@
       .remote { padding: 10px 15px 20px; gap: 12px; }
       .np-btn { width: 55px; height: 55px; }
       .star-btn svg { width: 12px; height: 12px; }
-      .vk-share-btn svg { width: 12px; height: 12px; }
-      .copy-btn { width: 26px; height: 26px; }
-      .vk-share-btn { width: 26px; height: 26px; }
+      .vk-share-btn svg { width: 14px; height: 14px; }
+      .vk-share-btn { width: 30px; height: 30px; }
     }
   </style>
 </head>
@@ -1203,6 +1122,10 @@
   <audio id="audioPlayer" preload="none" crossorigin="anonymous"></audio>
 
   <script>
+    // ID вашего VK Mini App и базовый URL
+    const VK_APP_ID = '54676278'; 
+    const VK_APP_BASE_URL = `https://vk.ru/app${VK_APP_ID}`;
+
     const SHEKER_STATIONS = [
       {name:"Europa Plus", genre:"Pop", country:"Russia", stream:"https://ep256.hostingradio.ru:8052/europaplus256.mp3"},
       {name:"Record 90s", genre:"Pop", country:"Russia", stream:"https://radiorecord.hostingradio.ru/sd9096.aacp"},
@@ -1373,6 +1296,10 @@
     const STATION_HITFM = "https://hitfm.hostingradio.ru/hitfm128.mp3";
     let audioUnlocked = false;
     let fadeInterval = null;
+
+    function getStationVKLink(streamUrl) {
+      return `${VK_APP_BASE_URL}#station=${encodeURIComponent(streamUrl)}`;
+    }
 
     function initAds() {
       if (!window.vkBridge) {
@@ -1821,44 +1748,24 @@
           </td>
           <td class="signal-col">
             ${sel ? '<button class="signal-btn stop" onclick="playStation(\'' + r.stream + '\')">LIVE</button>' : '<button class="signal-btn play" onclick="playStation(\'' + r.stream + '\')">TUNE</button>'}
-            <button class="vk-share-btn" onclick="shareToVK(this,\'${r.stream}\')" title="Share to VK">${shareIconSvg}</button>
-            <button class="copy-btn" onclick="copyShareLink(this,\'${r.stream}\')" title="Copy share link">🔗</button>
+            <button class="vk-share-btn" onclick="shareToVK(this,\'${r.stream}\')" title="Открыть в VK">${shareIconSvg}</button>
           </td>
         </tr>`;
       }).join('');
     }
 
-    function copyShareLink(btn, streamUrl) {
-      const shareUrl = 'https://musicradio.online/#station=' + encodeURIComponent(streamUrl);
-      navigator.clipboard.writeText(shareUrl).then(() => {
-        const original = btn.textContent;
-        btn.textContent = '✓';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = original; btn.classList.remove('copied'); }, 1500);
-      }).catch(() => {
-        const ta = document.createElement('textarea');
-        ta.value = shareUrl;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        btn.textContent = '✓';
-        btn.classList.add('copied');
-        setTimeout(() => { btn.textContent = '🔗'; btn.classList.remove('copied'); }, 1500);
-      });
-    }
-
     function shareToVK(btn, streamUrl) {
       const station = stations.find(s => s.stream === streamUrl);
-      const shareUrl = 'https://musicradio.online/#station=' + encodeURIComponent(streamUrl);
+      const shareUrl = getStationVKLink(streamUrl);
+      
       if (window.vkBridge && vkBridge.supports('VKWebAppShare')) {
         vkBridge.send('VKWebAppShare', { link: shareUrl }).then(() => {
           btn.classList.add('shared');
           setTimeout(() => btn.classList.remove('shared'), 1500);
         }).catch(e => { fallbackVKShare(shareUrl, station, btn); });
-      } else { fallbackVKShare(shareUrl, station, btn); }
+      } else { 
+        fallbackVKShare(shareUrl, station, btn); 
+      }
     }
 
     function fallbackVKShare(shareUrl, station, btn) {
@@ -1992,27 +1899,68 @@
 
     function toggleRecording() {
       if (!currentStationId) return;
+
       if (isRecording) {
-        mediaRecorder.stop();
+        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+          mediaRecorder.stop();
+        }
         isRecording = false;
         recBtn.classList.remove('recording');
       } else {
-        initAudioContext();
-        const dest = audioCtx.createMediaStreamDestination();
-        sourceNode.connect(dest);
-        mediaRecorder = new MediaRecorder(dest.stream);
-        recordedChunks = [];
-        mediaRecorder.ondataavailable = e => { if (e.data.size > 0) recordedChunks.push(e.data); };
-        mediaRecorder.onstop = () => {
-          const blob = new Blob(recordedChunks, {type: 'audio/webm'});
-          const a = document.createElement('a');
-          a.href = URL.createObjectURL(blob);
-          a.download = '#www.musicradio.online.mp3';
-          a.click();
-        };
-        mediaRecorder.start();
-        isRecording = true;
-        recBtn.classList.add('recording');
+        // Проверка на iOS: Safari блокирует запись MediaStream из cross-origin audio элементов
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        if (isIOS) {
+          alert('⚠️ Запись прямого эфира в Safari (iOS) ограничена системной политикой безопасности Apple.\n\nРекомендуем использовать встроенную функцию "Запись экрана" со звуком в вашей ОС.');
+          return;
+        }
+
+        try {
+          initAudioContext();
+          const dest = audioCtx.createMediaStreamDestination();
+          sourceNode.connect(dest);
+
+          // Выбор поддерживаемого формата для мобильных устройств (Android/iOS)
+          const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
+            ? 'audio/webm;codecs=opus'
+            : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4');
+
+          mediaRecorder = new MediaRecorder(dest.stream, { mimeType });
+          recordedChunks = [];
+
+          mediaRecorder.ondataavailable = e => {
+            if (e.data && e.data.size > 0) {
+              recordedChunks.push(e.data);
+            }
+          };
+
+          mediaRecorder.onstop = () => {
+            const blob = new Blob(recordedChunks, { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+
+            const station = stations.find(s => s.stream === currentStationId);
+            const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
+            a.download = `${safeName}_record.webm`;
+
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => {
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }, 100);
+          };
+
+          // Запускаем с интервалом 1 секунда для стабильности на мобильных устройствах
+          mediaRecorder.start(1000);
+          isRecording = true;
+          recBtn.classList.add('recording');
+
+        } catch (e) {
+          console.error('Ошибка записи:', e);
+          alert('⚠️ Не удалось начать запись. Ваш браузер или устройство может не поддерживать эту функцию для потокового аудио.');
+        }
       }
     }
 
