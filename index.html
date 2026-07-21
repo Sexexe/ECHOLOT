@@ -1122,7 +1122,6 @@
   <audio id="audioPlayer" preload="none" crossorigin="anonymous"></audio>
 
   <script>
-    // ID вашего VK Mini App и базовый URL
     const VK_APP_ID = '54676278'; 
     const VK_APP_BASE_URL = `https://vk.ru/app${VK_APP_ID}`;
 
@@ -1906,61 +1905,113 @@
         }
         isRecording = false;
         recBtn.classList.remove('recording');
-      } else {
-        // Проверка на iOS: Safari блокирует запись MediaStream из cross-origin audio элементов
-        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-        if (isIOS) {
-          alert('⚠️ Запись прямого эфира в Safari (iOS) ограничена системной политикой безопасности Apple.\n\nРекомендуем использовать встроенную функцию "Запись экрана" со звуком в вашей ОС.');
-          return;
-        }
+        return;
+      }
 
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      if (isIOS) {
+        alert('⚠️ На устройствах Apple запись эфира напрямую невозможна из-за ограничений системы безопасности.\n\nИспользуйте встроенную функцию "Запись экрана" (Пункт управления → Кнопка записи) со звуком.');
+        return;
+      }
+
+      if (typeof MediaRecorder === 'undefined') {
+        alert('⚠️ Ваш браузер не поддерживает запись аудио.\n\nПопробуйте открыть приложение в браузере Chrome для Android.');
+        return;
+      }
+
+      initAudioContext();
+      if (!audioCtx || !sourceNode) {
+        alert('⚠️ Аудио не инициализировано. Сначала включите воспроизведение станции.');
+        return;
+      }
+
+      let stream = null;
+      try {
+        if (typeof audioPlayer.captureStream === 'function') {
+          stream = audioPlayer.captureStream();
+        } else if (typeof audioPlayer.mozCaptureStream === 'function') {
+          stream = audioPlayer.mozCaptureStream();
+        }
+      } catch (e) {
+        console.warn('captureStream failed:', e);
+      }
+
+      if (!stream || stream.getAudioTracks().length === 0) {
         try {
-          initAudioContext();
           const dest = audioCtx.createMediaStreamDestination();
           sourceNode.connect(dest);
-
-          // Выбор поддерживаемого формата для мобильных устройств (Android/iOS)
-          const mimeType = MediaRecorder.isTypeSupported('audio/webm;codecs=opus')
-            ? 'audio/webm;codecs=opus'
-            : (MediaRecorder.isTypeSupported('audio/webm') ? 'audio/webm' : 'audio/mp4');
-
-          mediaRecorder = new MediaRecorder(dest.stream, { mimeType });
-          recordedChunks = [];
-
-          mediaRecorder.ondataavailable = e => {
-            if (e.data && e.data.size > 0) {
-              recordedChunks.push(e.data);
-            }
-          };
-
-          mediaRecorder.onstop = () => {
-            const blob = new Blob(recordedChunks, { type: mimeType });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-
-            const station = stations.find(s => s.stream === currentStationId);
-            const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
-            a.download = `${safeName}_record.webm`;
-
-            document.body.appendChild(a);
-            a.click();
-            setTimeout(() => {
-              document.body.removeChild(a);
-              URL.revokeObjectURL(url);
-            }, 100);
-          };
-
-          // Запускаем с интервалом 1 секунда для стабильности на мобильных устройствах
-          mediaRecorder.start(1000);
-          isRecording = true;
-          recBtn.classList.add('recording');
-
+          stream = dest.stream;
         } catch (e) {
-          console.error('Ошибка записи:', e);
-          alert('⚠️ Не удалось начать запись. Ваш браузер или устройство может не поддерживать эту функцию для потокового аудио.');
+          console.error('createMediaStreamDestination failed:', e);
+          alert('⚠️ Не удалось получить аудиопоток. Попробуйте другой браузер.');
+          return;
         }
+      }
+
+      let mimeType = '';
+      const mimeTypes = [
+        'audio/webm;codecs=opus',
+        'audio/webm',
+        'audio/mp4',
+        'audio/ogg'
+      ];
+      for (const type of mimeTypes) {
+        if (MediaRecorder.isTypeSupported(type)) {
+          mimeType = type;
+          break;
+        }
+      }
+
+      try {
+        const options = mimeType ? { mimeType } : {};
+        mediaRecorder = new MediaRecorder(stream, options);
+        recordedChunks = [];
+
+        mediaRecorder.ondataavailable = e => {
+          if (e.data && e.data.size > 0) {
+            recordedChunks.push(e.data);
+          }
+        };
+
+        mediaRecorder.onstop = () => {
+          if (recordedChunks.length === 0) {
+            alert('⚠️ Запись не удалась. Браузер не вернул аудиоданные.\n\nПопробуйте открыть приложение в Chrome для Android.');
+            return;
+          }
+          const actualType = mimeType || 'audio/webm';
+          const blob = new Blob(recordedChunks, { type: actualType });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.style.display = 'none';
+          a.href = url;
+
+          const station = stations.find(s => s.stream === currentStationId);
+          const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
+          const ext = actualType.includes('mp4') ? 'm4a' : (actualType.includes('ogg') ? 'ogg' : 'webm');
+          a.download = `${safeName}_record.${ext}`;
+
+          document.body.appendChild(a);
+          a.click();
+          setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+          }, 100);
+        };
+
+        mediaRecorder.onerror = (e) => {
+          console.error('MediaRecorder error:', e);
+          alert('⚠️ Ошибка при записи. Попробуйте использовать браузер Chrome.');
+          isRecording = false;
+          recBtn.classList.remove('recording');
+        };
+
+        mediaRecorder.start(1000);
+        isRecording = true;
+        recBtn.classList.add('recording');
+
+      } catch (e) {
+        console.error('MediaRecorder creation failed:', e);
+        alert('⚠️ Не удалось начать запись: ' + e.message + '\n\nПопробуйте открыть приложение в браузере Chrome для Android.');
       }
     }
 
