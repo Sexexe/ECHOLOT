@@ -51,6 +51,108 @@
       transition: background .3s ease, color .3s ease;
     }
 
+    /* --- КАСТОМНЫЕ МОДАЛЬНЫЕ ОКНА (Вместо alert) --- */
+    .custom-modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 100000;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .custom-modal {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 400px;
+      width: 90%;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+      animation: modalSlideIn 0.3s ease;
+    }
+
+    @keyframes modalSlideIn {
+      from { opacity: 0; transform: translateY(-20px) scale(0.95); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .custom-modal-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .custom-modal-icon {
+      font-size: 1.5rem;
+      flex-shrink: 0;
+    }
+
+    .custom-modal-title {
+      color: var(--text);
+      font-size: 1.1rem;
+      font-weight: 600;
+      font-family: 'Myriad', 'Arial', sans-serif;
+    }
+
+    .custom-modal-text {
+      color: var(--text-dim);
+      font-size: 0.9rem;
+      line-height: 1.6;
+      margin-bottom: 24px;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .custom-modal-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: flex-end;
+    }
+
+    .custom-modal-btn {
+      padding: 10px 20px;
+      border-radius: 10px;
+      border: none;
+      font-family: 'Myriad', 'Arial', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .custom-modal-btn.primary {
+      background: var(--cyan);
+      color: #000;
+    }
+
+    .custom-modal-btn.primary:hover {
+      box-shadow: 0 0 15px var(--cyan-glow);
+      transform: translateY(-1px);
+    }
+
+    .custom-modal-btn.primary:active {
+      transform: translateY(0);
+    }
+
+    .custom-modal-btn.secondary {
+      background: var(--border);
+      color: var(--text);
+    }
+
+    .custom-modal-btn.secondary:hover {
+      background: rgba(255,255,255,0.1);
+    }
+    /* ----------------------------------------------- */
+
     .tap-overlay {
       position: fixed;
       top: 0;
@@ -996,6 +1098,10 @@
       .star-btn svg { width: 12px; height: 12px; }
       .vk-share-btn svg { width: 14px; height: 14px; }
       .vk-share-btn { width: 30px; height: 30px; }
+      
+      .custom-modal { padding: 20px; width: 92%; }
+      .custom-modal-title { font-size: 1rem; }
+      .custom-modal-text { font-size: 0.85rem; }
     }
   </style>
 </head>
@@ -1242,6 +1348,71 @@
     const GENRE_SWITCHES_FOR_AD = 3;
     const STATIONS_FOR_INTERSTITIAL = 7;
 
+    // --- КАСТОМНЫЕ МОДАЛЬНЫЕ ОКНА ---
+    function showModal(options) {
+      const {
+        icon = '⚠️',
+        title = 'Внимание',
+        text = '',
+        buttons = [{ text: 'OK', type: 'primary', callback: () => {} }]
+      } = options;
+
+      const existing = document.querySelector('.custom-modal-overlay');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.className = 'custom-modal-overlay';
+      
+      const buttonsHTML = buttons.map(btn => 
+        `<button class="custom-modal-btn ${btn.type || 'primary'}" data-btn-index="${buttons.indexOf(btn)}">${btn.text}</button>`
+      ).join('');
+
+      overlay.innerHTML = `
+        <div class="custom-modal">
+          <div class="custom-modal-header">
+            <span class="custom-modal-icon">${icon}</span>
+            <span class="custom-modal-title">${title}</span>
+          </div>
+          <div class="custom-modal-text">${text}</div>
+          <div class="custom-modal-buttons">${buttonsHTML}</div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+      setTimeout(() => { overlay.style.display = 'flex'; }, 10);
+
+      overlay.querySelectorAll('.custom-modal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          const index = parseInt(btn.dataset.btnIndex);
+          const callback = buttons[index].callback;
+          overlay.style.opacity = '0';
+          setTimeout(() => {
+            overlay.remove();
+            if (callback) callback();
+          }, 300);
+        });
+      });
+
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.style.opacity = '0';
+          setTimeout(() => overlay.remove(), 300);
+        }
+      });
+    }
+
+    function showNotification(message, type = 'warning') {
+      const icons = { warning: '⚠️', error: '❌', info: 'ℹ️', success: '✅' };
+      const titles = { warning: 'Внимание', error: 'Ошибка', info: 'Информация', success: 'Успешно' };
+      showModal({
+        icon: icons[type] || icons.info,
+        title: titles[type] || titles.info,
+        text: message,
+        buttons: [{ text: 'OK', type: 'primary' }]
+      });
+    }
+    // --------------------------------
+
     function loadFavorites() {
       try {
         const saved = localStorage.getItem('favoriteStations');
@@ -1309,7 +1480,7 @@
       console.log('📢 Инициализация рекламы VK Bridge');
       checkInterstitialAd();
       checkRewardAd();
-      // ФУНКЦИЯ ПОКАЗА БАННЕРА УДАЛЕНА ПО ЗАПРОСУ
+      // showBannerAd() полностью удален по запросу модератора
     }
 
     function checkInterstitialAd() {
@@ -1373,17 +1544,7 @@
       vkBridge.send('VKWebAppCheckNativeAds', { ad_format: 'reward' })
         .then((checkData) => {
           if (!checkData.result) {
-            trayText.textContent = '⚠️ РЕКЛАМА НЕДОСТУПНА';
-            trayText.style.color = 'var(--yellow)';
-            setTimeout(() => {
-              if (currentStationId) {
-                const station = stations.find(s => s.stream === currentStationId);
-                if (station) {
-                  trayText.textContent = `${station.name} • ${station.country}`;
-                  trayText.style.color = 'var(--cyan)';
-                }
-              }
-            }, 2000);
+            showNotification('Реклама за вознаграждение временно недоступна', 'warning');
             return;
           }
           vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'reward' })
@@ -1586,7 +1747,7 @@
       );
     }
 
-    // ИСПРАВЛЕНИЕ: Остановка радио при закрытии/сворачивании приложения
+    // --- ОСТАНОВКА ПРИ СВОРАЧИВАНИИ/ЗАКРЫТИИ ---
     function forceStopOnBackground() {
       if (isRecording) {
         toggleRecording(); // Безопасно завершаем запись
@@ -1610,6 +1771,7 @@
     });
 
     window.addEventListener('pagehide', forceStopOnBackground);
+    // ---------------------------------------------
 
     window.addEventListener('DOMContentLoaded', () => {
       loadFavorites();
@@ -1908,8 +2070,12 @@
       playStation(filteredStations[(idx - 1 + filteredStations.length) % filteredStations.length].stream);
     }
 
+    // --- УЛУЧШЕННАЯ ФУНКЦИЯ ЗАПИСИ ДЛЯ МОБИЛЬНЫХ ---
     function toggleRecording() {
-      if (!currentStationId) return;
+      if (!currentStationId) {
+        showNotification('Сначала выберите и включите радиостанцию', 'warning');
+        return;
+      }
 
       if (isRecording) {
         if (mediaRecorder && mediaRecorder.state !== 'inactive') {
@@ -1917,17 +2083,26 @@
         }
         isRecording = false;
         recBtn.classList.remove('recording');
+        showNotification('Запись успешно сохранена!', 'success');
         return;
       }
 
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
       if (isIOS) {
-        alert('⚠️ На устройствах Apple запись эфира напрямую в браузере невозможна из-за ограничений безопасности iOS.\n\nИспользуйте встроенную функцию "Запись экрана" в Пункте управления.');
+        showNotification(
+          'На устройствах Apple запись эфира напрямую невозможна из-за ограничений безопасности iOS.<br><br>' +
+          'Используйте встроенную функцию "Запись экрана" в Пункте управления (с включенным звуком).',
+          'warning'
+        );
         return;
       }
 
       if (typeof MediaRecorder === 'undefined') {
-        alert('⚠️ Ваш браузер не поддерживает запись аудио.');
+        showNotification(
+          'Ваш браузер не поддерживает запись аудио.<br><br>' +
+          'Рекомендуем открыть приложение в браузере Chrome для Android.',
+          'error'
+        );
         return;
       }
 
@@ -1936,43 +2111,49 @@
         audioCtx.resume().catch(() => {});
       }
 
+      if (!sourceNode) {
+        showNotification('Аудио не инициализировано. Сначала включите воспроизведение станции.', 'warning');
+        return;
+      }
+
       let stream = null;
+      let useFallback = false;
+      
       try {
-        // Попытка захватить поток напрямую (работает в некоторых Android WebView)
         if (typeof audioPlayer.captureStream === 'function') {
           stream = audioPlayer.captureStream();
         } else if (typeof audioPlayer.mozCaptureStream === 'function') {
           stream = audioPlayer.mozCaptureStream();
         }
+        
+        if (!stream || stream.getAudioTracks().length === 0) {
+          useFallback = true;
+        }
       } catch (e) {
         console.warn('captureStream failed:', e);
+        useFallback = true;
       }
 
-      // Если прямой захват не удался, используем AudioContext (наиболее совместимый способ для VK Mini App)
-      if (!stream || stream.getAudioTracks().length === 0) {
+      // Fallback через AudioContext (наиболее надежный способ для VK Mini App WebView)
+      if (useFallback) {
         try {
           const dest = audioCtx.createMediaStreamDestination();
-          if (sourceNode) {
-            sourceNode.connect(dest);
-          }
+          sourceNode.connect(dest);
           stream = dest.stream;
+          console.log('Using MediaStreamDestination fallback for recording');
         } catch (e) {
           console.error('createMediaStreamDestination failed:', e);
-          alert('⚠️ Не удалось получить аудиопоток. Попробуйте открыть приложение в Chrome для Android.');
+          showNotification(
+            'Не удалось получить аудиопоток для записи.<br><br>' +
+            'Попробуйте:<br>1. Обновить страницу<br>2. Открыть в Chrome для Android',
+            'error'
+          );
           return;
         }
       }
 
-      // ПРИМЕЧАНИЕ: Браузеры нативно не поддерживают кодирование в MP3 через MediaRecorder.
-      // Мы используем лучший доступный формат (обычно webm или mp4/aac), но сохраняем файл с расширением .mp3
-      // для максимальной совместимости с плеерами, как запрошено.
       let mimeType = '';
-      const mimeTypes = [
-        'audio/webm;codecs=opus',
-        'audio/mp4',
-        'audio/webm',
-        'audio/ogg'
-      ];
+      const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
       for (const type of mimeTypes) {
         if (MediaRecorder.isTypeSupported(type)) {
           mimeType = type;
@@ -1993,12 +2174,14 @@
 
         mediaRecorder.onstop = () => {
           if (recordedChunks.length === 0) {
-            alert('⚠️ Запись не удалась: нет аудиоданных. Попробуйте Chrome на Android.');
+            showNotification(
+              'Запись не удалась: нет аудиоданных.<br><br>' +
+              'Убедитесь, что радио играет, а громкость не на нуле.',
+              'error'
+            );
             return;
           }
           
-          // Принудительно используем расширение .mp3 по запросу, хотя внутренний контейнер может быть webm/mp4
-          const ext = 'mp3'; 
           const actualType = mimeType || 'audio/webm';
           const blob = new Blob(recordedChunks, { type: actualType });
           const url = URL.createObjectURL(blob);
@@ -2008,32 +2191,48 @@
 
           const station = stations.find(s => s.stream === currentStationId);
           const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
+          // Сохраняем как .mp3 для совместимости с плеерами, хотя внутренний контейнер может быть webm/mp4
+          const ext = 'mp3'; 
           a.download = `${safeName}_record.${ext}`;
 
           document.body.appendChild(a);
           a.click();
+          
           setTimeout(() => {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
           }, 100);
+          
+          showNotification('Запись успешно сохранена в загрузки!', 'success');
         };
 
         mediaRecorder.onerror = (e) => {
           console.error('MediaRecorder error:', e);
-          alert('⚠️ Ошибка при записи. Попробуйте использовать Chrome на Android.');
+          showNotification('Ошибка при записи. Попробуйте использовать Chrome на Android.', 'error');
           isRecording = false;
           recBtn.classList.remove('recording');
         };
 
+        if (stream.getAudioTracks().length === 0) {
+          showNotification(
+            'Не удалось получить аудиопоток.<br><br>' +
+            'Убедитесь, что:<br>• Радио играет<br>• Громкость не на нуле',
+            'error'
+          );
+          return;
+        }
+
         mediaRecorder.start(1000);
         isRecording = true;
         recBtn.classList.add('recording');
+        showNotification('Запись началась...', 'info');
 
       } catch (e) {
         console.error('MediaRecorder creation failed:', e);
-        alert('⚠️ Не удалось начать запись: ' + e.message);
+        showNotification('Не удалось начать запись: ' + e.message, 'error');
       }
     }
+    // -----------------------------------------------
 
     function skipToNext() {
       if (isAutoSkipping) return;
@@ -2270,7 +2469,7 @@
             case 'VKWebAppChangeFragment':
               break;
             case 'VKWebAppClose':
-              forceStopOnBackground(); // Дополнительная гарантия остановки при закрытии
+              forceStopOnBackground(); // Гарантированная остановка при закрытии
               vkBridge.send('VKWebAppClose', { status: 'success' });
               break;
           }
