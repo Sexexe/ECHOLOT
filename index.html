@@ -1309,11 +1309,7 @@
       console.log('📢 Инициализация рекламы VK Bridge');
       checkInterstitialAd();
       checkRewardAd();
-      setTimeout(() => { showBannerAd(); }, 2000);
-      setInterval(() => {
-        if (!interstitialReady) checkInterstitialAd();
-        if (!rewardReady) checkRewardAd();
-      }, 60000);
+      // ФУНКЦИЯ ПОКАЗА БАННЕРА УДАЛЕНА ПО ЗАПРОСУ
     }
 
     function checkInterstitialAd() {
@@ -1341,15 +1337,6 @@
           }
         })
         .catch((error) => { console.warn('⚠️ Ошибка проверки:', error); });
-    }
-
-    function showBannerAd() {
-      if (!window.vkBridge || !vkBridgeReady) return;
-      vkBridge.send('VKWebAppShowBannerAd', { banner_location: 'bottom' })
-        .then((data) => {
-          if (data.result) console.log('✅ Баннерная реклама отображена');
-        })
-        .catch((error) => { console.warn('⚠️ Ошибка показа баннера:', error); });
     }
 
     function showInterstitialAd(callback) {
@@ -1598,6 +1585,31 @@
         window.removeEventListener(e, fastUnlock, true)
       );
     }
+
+    // ИСПРАВЛЕНИЕ: Остановка радио при закрытии/сворачивании приложения
+    function forceStopOnBackground() {
+      if (isRecording) {
+        toggleRecording(); // Безопасно завершаем запись
+      }
+      if (audioPlayer) {
+        audioPlayer.pause();
+        audioPlayer.src = '';
+      }
+      if (stallTimer) clearTimeout(stallTimer);
+      currentStationId = null;
+      trayText.textContent = "AWAITING SIGNAL";
+      trayText.style.color = 'var(--text-dim)';
+      trayIndicator.style.background = 'var(--cyan)';
+      render();
+    }
+
+    document.addEventListener('visibilitychange', () => {
+      if (document.visibilityState === 'hidden') {
+        forceStopOnBackground();
+      }
+    });
+
+    window.addEventListener('pagehide', forceStopOnBackground);
 
     window.addEventListener('DOMContentLoaded', () => {
       loadFavorites();
@@ -1910,23 +1922,23 @@
 
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
       if (isIOS) {
-        alert('⚠️ На устройствах Apple запись эфира напрямую невозможна из-за ограничений системы безопасности.\n\nИспользуйте встроенную функцию "Запись экрана" (Пункт управления → Кнопка записи) со звуком.');
+        alert('⚠️ На устройствах Apple запись эфира напрямую в браузере невозможна из-за ограничений безопасности iOS.\n\nИспользуйте встроенную функцию "Запись экрана" в Пункте управления.');
         return;
       }
 
       if (typeof MediaRecorder === 'undefined') {
-        alert('⚠️ Ваш браузер не поддерживает запись аудио.\n\nПопробуйте открыть приложение в браузере Chrome для Android.');
+        alert('⚠️ Ваш браузер не поддерживает запись аудио.');
         return;
       }
 
       initAudioContext();
-      if (!audioCtx || !sourceNode) {
-        alert('⚠️ Аудио не инициализировано. Сначала включите воспроизведение станции.');
-        return;
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume().catch(() => {});
       }
 
       let stream = null;
       try {
+        // Попытка захватить поток напрямую (работает в некоторых Android WebView)
         if (typeof audioPlayer.captureStream === 'function') {
           stream = audioPlayer.captureStream();
         } else if (typeof audioPlayer.mozCaptureStream === 'function') {
@@ -1936,23 +1948,29 @@
         console.warn('captureStream failed:', e);
       }
 
+      // Если прямой захват не удался, используем AudioContext (наиболее совместимый способ для VK Mini App)
       if (!stream || stream.getAudioTracks().length === 0) {
         try {
           const dest = audioCtx.createMediaStreamDestination();
-          sourceNode.connect(dest);
+          if (sourceNode) {
+            sourceNode.connect(dest);
+          }
           stream = dest.stream;
         } catch (e) {
           console.error('createMediaStreamDestination failed:', e);
-          alert('⚠️ Не удалось получить аудиопоток. Попробуйте другой браузер.');
+          alert('⚠️ Не удалось получить аудиопоток. Попробуйте открыть приложение в Chrome для Android.');
           return;
         }
       }
 
+      // ПРИМЕЧАНИЕ: Браузеры нативно не поддерживают кодирование в MP3 через MediaRecorder.
+      // Мы используем лучший доступный формат (обычно webm или mp4/aac), но сохраняем файл с расширением .mp3
+      // для максимальной совместимости с плеерами, как запрошено.
       let mimeType = '';
       const mimeTypes = [
         'audio/webm;codecs=opus',
-        'audio/webm',
         'audio/mp4',
+        'audio/webm',
         'audio/ogg'
       ];
       for (const type of mimeTypes) {
@@ -1963,7 +1981,7 @@
       }
 
       try {
-        const options = mimeType ? { mimeType } : {};
+        const options = mimeType ? { mimeType, audioBitsPerSecond: 128000 } : { audioBitsPerSecond: 128000 };
         mediaRecorder = new MediaRecorder(stream, options);
         recordedChunks = [];
 
@@ -1975,9 +1993,12 @@
 
         mediaRecorder.onstop = () => {
           if (recordedChunks.length === 0) {
-            alert('⚠️ Запись не удалась. Браузер не вернул аудиоданные.\n\nПопробуйте открыть приложение в Chrome для Android.');
+            alert('⚠️ Запись не удалась: нет аудиоданных. Попробуйте Chrome на Android.');
             return;
           }
+          
+          // Принудительно используем расширение .mp3 по запросу, хотя внутренний контейнер может быть webm/mp4
+          const ext = 'mp3'; 
           const actualType = mimeType || 'audio/webm';
           const blob = new Blob(recordedChunks, { type: actualType });
           const url = URL.createObjectURL(blob);
@@ -1987,7 +2008,6 @@
 
           const station = stations.find(s => s.stream === currentStationId);
           const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
-          const ext = actualType.includes('mp4') ? 'm4a' : (actualType.includes('ogg') ? 'ogg' : 'webm');
           a.download = `${safeName}_record.${ext}`;
 
           document.body.appendChild(a);
@@ -2000,7 +2020,7 @@
 
         mediaRecorder.onerror = (e) => {
           console.error('MediaRecorder error:', e);
-          alert('⚠️ Ошибка при записи. Попробуйте использовать браузер Chrome.');
+          alert('⚠️ Ошибка при записи. Попробуйте использовать Chrome на Android.');
           isRecording = false;
           recBtn.classList.remove('recording');
         };
@@ -2011,7 +2031,7 @@
 
       } catch (e) {
         console.error('MediaRecorder creation failed:', e);
-        alert('⚠️ Не удалось начать запись: ' + e.message + '\n\nПопробуйте открыть приложение в браузере Chrome для Android.');
+        alert('⚠️ Не удалось начать запись: ' + e.message);
       }
     }
 
@@ -2250,6 +2270,7 @@
             case 'VKWebAppChangeFragment':
               break;
             case 'VKWebAppClose':
+              forceStopOnBackground(); // Дополнительная гарантия остановки при закрытии
               vkBridge.send('VKWebAppClose', { status: 'success' });
               break;
           }
