@@ -1480,7 +1480,6 @@
       console.log('📢 Инициализация рекламы VK Bridge');
       checkInterstitialAd();
       checkRewardAd();
-      // showBannerAd() полностью удален по запросу модератора
     }
 
     function checkInterstitialAd() {
@@ -2099,8 +2098,8 @@
 
       if (typeof MediaRecorder === 'undefined') {
         showNotification(
-          'Ваш браузер не поддерживает запись аудио.<br><br>' +
-          'Рекомендуем открыть приложение в браузере Chrome для Android.',
+          'Ваш текущий браузер или встроенный веб-просмотрщик не поддерживает функцию записи аудио из соображений безопасности.<br><br>' +
+          'Попробуйте открыть приложение через стандартный браузер устройства в полноэкранном режиме.',
           'error'
         );
         return;
@@ -2144,8 +2143,8 @@
         } catch (e) {
           console.error('createMediaStreamDestination failed:', e);
           showNotification(
-            'Не удалось получить аудиопоток для записи.<br><br>' +
-            'Попробуйте:<br>1. Обновить страницу<br>2. Открыть в Chrome для Android',
+            'Не удалось получить доступ к аудиопотоку для записи.<br><br>' +
+            'Попробуйте:<br>1. Обновить страницу<br>2. Убедиться, что воспроизведение не заблокировано политиками браузера.',
             'error'
           );
           return;
@@ -2175,8 +2174,8 @@
         mediaRecorder.onstop = () => {
           if (recordedChunks.length === 0) {
             showNotification(
-              'Запись не удалась: нет аудиоданных.<br><br>' +
-              'Убедитесь, что радио играет, а громкость не на нуле.',
+              'Запись не удалась: отсутствуют аудиоданные.<br><br>' +
+              'Убедитесь, что радио играет, а громкость устройства не на нуле.',
               'error'
             );
             return;
@@ -2184,31 +2183,58 @@
           
           const actualType = mimeType || 'audio/webm';
           const blob = new Blob(recordedChunks, { type: actualType });
-          const url = URL.createObjectURL(blob);
-          const a = document.createElement('a');
-          a.style.display = 'none';
-          a.href = url;
-
+          
+          // Честное определение расширения на основе реального MIME-типа
+          let ext = 'webm';
+          if (actualType.includes('mp4')) ext = 'mp4';
+          else if (actualType.includes('ogg')) ext = 'ogg';
+          
           const station = stations.find(s => s.stream === currentStationId);
           const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
-          // Сохраняем как .mp3 для совместимости с плеерами, хотя внутренний контейнер может быть webm/mp4
-          const ext = 'mp3'; 
-          a.download = `${safeName}_record.${ext}`;
+          const fileName = `${safeName}_record.${ext}`;
+          
+          // Создаем объект File для нативного шеринга (лучшая практика для мобильных ОС)
+          const file = new File([blob], fileName, { type: actualType });
 
-          document.body.appendChild(a);
-          a.click();
-          
-          setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-          }, 100);
-          
-          showNotification('Запись успешно сохранена в загрузки!', 'success');
+          // Попытка использовать нативное меню "Поделиться" (Android/iOS)
+          if (navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+              files: [file],
+              title: 'Запись радиоэфира',
+              text: `Запись станции: ${station ? station.name : 'Radio'}`
+            }).then(() => {
+              showNotification('Выберите "Сохранить в файлы" или "Загрузки" в открывшемся меню.', 'success');
+            }).catch(err => {
+              console.log('Пользователь отменил отправку или произошла ошибка шеринга', err);
+            });
+          } else {
+            // Fallback для десктопа или старых браузеров
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => {
+              document.body.removeChild(a);
+              URL.revokeObjectURL(url);
+            }, 100);
+            
+            showNotification(
+              'Файл сформирован. Если загрузка не началась автоматически, это ограничение безопасности встроенного браузера (WebView). Попробуйте открыть приложение в полноэкранном режиме стандартного браузера.', 
+              'info'
+            );
+          }
         };
 
         mediaRecorder.onerror = (e) => {
           console.error('MediaRecorder error:', e);
-          showNotification('Ошибка при записи. Попробуйте использовать Chrome на Android.', 'error');
+          showNotification(
+            'Произошла ошибка при записи аудиопотока. Это может быть связано со строгими ограничениями безопасности текущего веб-браузера или WebView.', 
+            'error'
+          );
           isRecording = false;
           recBtn.classList.remove('recording');
         };
