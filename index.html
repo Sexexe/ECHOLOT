@@ -51,7 +51,7 @@
       transition: background .3s ease, color .3s ease;
     }
 
-    /* --- КАСТОМНЫЕ МОДАЛЬНЫЕ ОКНА (Вместо alert) --- */
+    /* --- КАСТОМНЫЕ МОДАЛЬНЫЕ ОКНА --- */
     .custom-modal-overlay {
       position: fixed;
       top: 0;
@@ -112,6 +112,14 @@
       font-family: 'Arial', sans-serif;
     }
 
+    .custom-modal-text p {
+      margin: 0 0 15px 0;
+    }
+
+    .custom-modal-text p:last-child {
+      margin-bottom: 0;
+    }
+
     .custom-modal-buttons {
       display: flex;
       gap: 10px;
@@ -127,11 +135,15 @@
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
+      user-select: none;
     }
 
     .custom-modal-btn.primary {
       background: var(--cyan);
       color: #000;
+      text-decoration: none;
+      text-align: center;
+      display: inline-block;
     }
 
     .custom-modal-btn.primary:hover {
@@ -151,7 +163,17 @@
     .custom-modal-btn.secondary:hover {
       background: rgba(255,255,255,0.1);
     }
-    /* ----------------------------------------------- */
+
+    .custom-modal-buttons.column {
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .custom-modal-buttons.column .custom-modal-btn {
+      width: 100%;
+      text-align: center;
+    }
+    /* --------------------------------- */
 
     .tap-overlay {
       position: fixed;
@@ -1112,7 +1134,7 @@
 
     <div class="legal-warning">
       <div class="legal-warning-header">
-        <span class="legal-warning-icon">⚠️</span>
+        <span class="legal-warning-icon">️</span>
         <span class="legal-warning-title">Важная информация</span>
       </div>
       <div class="legal-warning-text">
@@ -1746,10 +1768,15 @@
       );
     }
 
-    // --- ОСТАНОВКА ПРИ СВОРАЧИВАНИИ/ЗАКРЫТИИ ---
     function forceStopOnBackground() {
       if (isRecording) {
-        toggleRecording(); // Безопасно завершаем запись
+        try {
+          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+            mediaRecorder.stop();
+          }
+        } catch (e) {}
+        isRecording = false;
+        recBtn.classList.remove('recording');
       }
       if (audioPlayer) {
         audioPlayer.pause();
@@ -1770,7 +1797,6 @@
     });
 
     window.addEventListener('pagehide', forceStopOnBackground);
-    // ---------------------------------------------
 
     window.addEventListener('DOMContentLoaded', () => {
       loadFavorites();
@@ -2069,7 +2095,7 @@
       playStation(filteredStations[(idx - 1 + filteredStations.length) % filteredStations.length].stream);
     }
 
-    // --- УЛУЧШЕННАЯ ФУНКЦИЯ ЗАПИСИ ДЛЯ МОБИЛЬНЫХ ---
+    // --- ЗАПИСЬ С МОБИЛЬНОЙ ЗАГРУЗКОЙ ---
     function toggleRecording() {
       if (!currentStationId) {
         showNotification('Сначала выберите и включите радиостанцию', 'warning');
@@ -2082,24 +2108,27 @@
         }
         isRecording = false;
         recBtn.classList.remove('recording');
-        showNotification('Запись успешно сохранена!', 'success');
         return;
       }
 
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const isAndroid = /Android/.test(navigator.userAgent);
+      const isMobile = isIOS || isAndroid;
+      const isWebView = /wv|WebView/i.test(navigator.userAgent) || window.vkBridge;
+
       if (isIOS) {
         showNotification(
-          'На устройствах Apple запись эфира напрямую невозможна из-за ограничений безопасности iOS.<br><br>' +
-          'Используйте встроенную функцию "Запись экрана" в Пункте управления (с включенным звуком).',
-          'warning'
+          'На iOS запись эфира имеет ограничения.<br><br>' +
+          'Рекомендуем использовать встроенную функцию "Запись экрана" в Пункте управления.',
+          'info'
         );
         return;
       }
 
       if (typeof MediaRecorder === 'undefined') {
         showNotification(
-          'Ваш текущий браузер или встроенный веб-просмотрщик не поддерживает функцию записи аудио из соображений безопасности.<br><br>' +
-          'Попробуйте открыть приложение через стандартный браузер устройства в полноэкранном режиме.',
+          'Ваш браузер не поддерживает запись аудио.<br><br>' +
+          'Откройте приложение в Chrome для Android.',
           'error'
         );
         return;
@@ -2133,18 +2162,17 @@
         useFallback = true;
       }
 
-      // Fallback через AudioContext (наиболее надежный способ для VK Mini App WebView)
       if (useFallback) {
         try {
           const dest = audioCtx.createMediaStreamDestination();
           sourceNode.connect(dest);
           stream = dest.stream;
-          console.log('Using MediaStreamDestination fallback for recording');
+          console.log('Using MediaStreamDestination fallback');
         } catch (e) {
           console.error('createMediaStreamDestination failed:', e);
           showNotification(
-            'Не удалось получить доступ к аудиопотоку для записи.<br><br>' +
-            'Попробуйте:<br>1. Обновить страницу<br>2. Убедиться, что воспроизведение не заблокировано политиками браузера.',
+            'Не удалось получить аудиопоток.<br><br>' +
+            'Попробуйте Chrome на Android.',
             'error'
           );
           return;
@@ -2174,8 +2202,8 @@
         mediaRecorder.onstop = () => {
           if (recordedChunks.length === 0) {
             showNotification(
-              'Запись не удалась: отсутствуют аудиоданные.<br><br>' +
-              'Убедитесь, что радио играет, а громкость устройства не на нуле.',
+              'Запись не удалась: нет аудиоданных.<br><br>' +
+              'Убедитесь, что радио играет.',
               'error'
             );
             return;
@@ -2184,57 +2212,30 @@
           const actualType = mimeType || 'audio/webm';
           const blob = new Blob(recordedChunks, { type: actualType });
           
-          // Честное определение расширения на основе реального MIME-типа
           let ext = 'webm';
-          if (actualType.includes('mp4')) ext = 'mp4';
+          if (actualType.includes('mp4')) ext = 'm4a';
           else if (actualType.includes('ogg')) ext = 'ogg';
+          else if (actualType.includes('webm')) ext = 'mp3';
           
           const station = stations.find(s => s.stream === currentStationId);
           const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
           const fileName = `${safeName}_record.${ext}`;
           
-          // Создаем объект File для нативного шеринга (лучшая практика для мобильных ОС)
-          const file = new File([blob], fileName, { type: actualType });
-
-          // Попытка использовать нативное меню "Поделиться" (Android/iOS)
-          if (navigator.canShare && navigator.canShare({ files: [file] })) {
-            navigator.share({
-              files: [file],
-              title: 'Запись радиоэфира',
-              text: `Запись станции: ${station ? station.name : 'Radio'}`
-            }).then(() => {
-              showNotification('Выберите "Сохранить в файлы" или "Загрузки" в открывшемся меню.', 'success');
-            }).catch(err => {
-              console.log('Пользователь отменил отправку или произошла ошибка шеринга', err);
-            });
+          // Разделение на мобильные и десктопные устройства
+          if (isMobile && isWebView) {
+            handleMobileDownload(blob, fileName, actualType);
+          } else if (isMobile) {
+            handleMobileDownload(blob, fileName, actualType);
           } else {
-            // Fallback для десктопа или старых браузеров
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = url;
-            a.download = fileName;
-            document.body.appendChild(a);
-            a.click();
-            
-            setTimeout(() => {
-              document.body.removeChild(a);
-              URL.revokeObjectURL(url);
-            }, 100);
-            
-            showNotification(
-              'Файл сформирован. Если загрузка не началась автоматически, это ограничение безопасности встроенного браузера (WebView). Попробуйте открыть приложение в полноэкранном режиме стандартного браузера.', 
-              'info'
-            );
+            handleDesktopDownload(blob, fileName);
           }
+          
+          showNotification('Запись завершена! Файл сохраняется...', 'success');
         };
 
         mediaRecorder.onerror = (e) => {
           console.error('MediaRecorder error:', e);
-          showNotification(
-            'Произошла ошибка при записи аудиопотока. Это может быть связано со строгими ограничениями безопасности текущего веб-браузера или WebView.', 
-            'error'
-          );
+          showNotification('Ошибка при записи.', 'error');
           isRecording = false;
           recBtn.classList.remove('recording');
         };
@@ -2242,7 +2243,7 @@
         if (stream.getAudioTracks().length === 0) {
           showNotification(
             'Не удалось получить аудиопоток.<br><br>' +
-            'Убедитесь, что:<br>• Радио играет<br>• Громкость не на нуле',
+            'Убедитесь, что радио играет.',
             'error'
           );
           return;
@@ -2258,7 +2259,152 @@
         showNotification('Не удалось начать запись: ' + e.message, 'error');
       }
     }
-    // -----------------------------------------------
+
+    // Загрузка для десктопных браузеров
+    function handleDesktopDownload(blob, fileName) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = fileName;
+      document.body.appendChild(a);
+      a.click();
+      
+      setTimeout(() => {
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      }, 100);
+    }
+
+    // Загрузка для мобильных устройств с видимой кнопкой
+    function handleMobileDownload(blob, fileName, mimeType) {
+      const url = URL.createObjectURL(blob);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      
+      if (isIOS) {
+        showIOSDownloadInstructions(url, fileName);
+      } else {
+        showMobileDownloadButton(url, fileName);
+      }
+    }
+
+    // Модальное окно с кнопкой скачивания для Android
+    function showMobileDownloadButton(url, fileName) {
+      // Удаляем существующее модальное окно
+      const existing = document.getElementById('downloadModal');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'downloadModal';
+      overlay.className = 'custom-modal-overlay';
+      overlay.innerHTML = `
+        <div class="custom-modal">
+          <div class="custom-modal-header">
+            <span class="custom-modal-icon">📥</span>
+            <span class="custom-modal-title">Скачивание записи</span>
+          </div>
+          <div class="custom-modal-text">
+            <p>Файл готов к загрузке. Нажмите кнопку ниже для сохранения.</p>
+            <p style="font-size: 0.85rem; margin-top: 15px;">
+              <strong>Если файл не загружается:</strong><br>
+              1. Откройте это приложение в браузере Chrome<br>
+              2. Или скопируйте ссылку и откройте в новой вкладке
+            </p>
+          </div>
+          <div class="custom-modal-buttons column">
+            <a href="${url}" download="${fileName}" 
+               class="custom-modal-btn primary" 
+               id="downloadLink">
+              ⬇️ Скачать файл
+            </a>
+            <button class="custom-modal-btn secondary" id="closeDownloadBtn">
+              Закрыть
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+      setTimeout(() => { overlay.style.display = 'flex'; }, 10);
+
+      // Обработчик кнопки закрытия
+      document.getElementById('closeDownloadBtn').addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.remove();
+          URL.revokeObjectURL(url);
+        }, 300);
+      });
+
+      // Закрытие по клику на оверлей
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.style.opacity = '0';
+          setTimeout(() => {
+            overlay.remove();
+            URL.revokeObjectURL(url);
+          }, 300);
+        }
+      });
+    }
+
+    // Инструкции для iOS
+    function showIOSDownloadInstructions(url, fileName) {
+      const existing = document.getElementById('iosDownloadModal');
+      if (existing) existing.remove();
+
+      const overlay = document.createElement('div');
+      overlay.id = 'iosDownloadModal';
+      overlay.className = 'custom-modal-overlay';
+      overlay.innerHTML = `
+        <div class="custom-modal">
+          <div class="custom-modal-header">
+            <span class="custom-modal-icon">️</span>
+            <span class="custom-modal-title">iOS: Сохранение записи</span>
+          </div>
+          <div class="custom-modal-text">
+            <p><strong>На iOS автоматическая загрузка ограничена.</strong></p>
+            <p style="margin-top: 15px;">
+              <strong>Способ 1:</strong> Нажмите кнопку ниже, затем в открывшейся странице нажмите "Поделиться" → "Сохранить в Файлы"
+            </p>
+            <p>
+              <strong>Способ 2:</strong> Используйте функцию "Запись экрана" в Пункте управления iOS
+            </p>
+          </div>
+          <div class="custom-modal-buttons column">
+            <a href="${url}" target="_blank"
+               class="custom-modal-btn primary">
+               Открыть аудио файл
+            </a>
+            <button class="custom-modal-btn secondary" id="closeIOSBtn">
+              Закрыть
+            </button>
+          </div>
+        </div>
+      `;
+
+      document.body.appendChild(overlay);
+      setTimeout(() => { overlay.style.display = 'flex'; }, 10);
+
+      document.getElementById('closeIOSBtn').addEventListener('click', () => {
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.remove();
+          URL.revokeObjectURL(url);
+        }, 300);
+      });
+
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          overlay.style.opacity = '0';
+          setTimeout(() => {
+            overlay.remove();
+            URL.revokeObjectURL(url);
+          }, 300);
+        }
+      });
+    }
+    // -------------------------------------
 
     function skipToNext() {
       if (isAutoSkipping) return;
@@ -2495,7 +2641,7 @@
             case 'VKWebAppChangeFragment':
               break;
             case 'VKWebAppClose':
-              forceStopOnBackground(); // Гарантированная остановка при закрытии
+              forceStopOnBackground();
               vkBridge.send('VKWebAppClose', { status: 'success' });
               break;
           }
