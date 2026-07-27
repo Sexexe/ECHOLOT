@@ -6,10 +6,7 @@
   <title>MUSIC RADIO ONLINE</title>
   <meta name="description" content="Free global music radio aggregator with 80+ verified stations. Ad-free, high quality streaming.">
   
-  <!-- VK Bridge -->
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
-  
-  <!-- Three.js -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
@@ -24,7 +21,6 @@
       --cyan-glow: rgba(0,212,255,.6);
       --red: #ff4466;
       --yellow: #ffaa00;
-      --yellow-dim: rgba(255,170,0,.15);
       --border: rgba(255,255,255,.05);
       --panel-height: 220px;
       --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -32,12 +28,7 @@
       --star-gap: 3mm;
     }
 
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
 
     body {
       background: var(--bg);
@@ -51,13 +42,10 @@
       transition: background .3s ease, color .3s ease;
     }
 
-    /* --- КАСТОМНЫЕ МОДАЛЬНЫЕ ОКНА --- */
     .custom-modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       background: rgba(0,0,0,0.85);
       display: none;
       align-items: center;
@@ -92,17 +80,8 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .custom-modal-icon {
-      font-size: 1.5rem;
-      flex-shrink: 0;
-    }
-
-    .custom-modal-title {
-      color: var(--text);
-      font-size: 1.1rem;
-      font-weight: 600;
-      font-family: 'Myriad', 'Arial', sans-serif;
-    }
+    .custom-modal-icon { font-size: 1.5rem; flex-shrink: 0; }
+    .custom-modal-title { color: var(--text); font-size: 1.1rem; font-weight: 600; font-family: 'Myriad', 'Arial', sans-serif; }
 
     .custom-modal-text {
       color: var(--text-dim);
@@ -112,19 +91,12 @@
       font-family: 'Arial', sans-serif;
     }
 
-    .custom-modal-text p {
-      margin: 0 0 15px 0;
-    }
+    .custom-modal-text p { margin: 0 0 15px 0; }
+    .custom-modal-text p:last-child { margin-bottom: 0; }
 
-    .custom-modal-text p:last-child {
-      margin-bottom: 0;
-    }
-
-    .custom-modal-buttons {
-      display: flex;
-      gap: 10px;
-      justify-content: flex-end;
-    }
+    .custom-modal-buttons { display: flex; gap: 10px; justify-content: flex-end; }
+    .custom-modal-buttons.column { flex-direction: column; gap: 10px; }
+    .custom-modal-buttons.column .custom-modal-btn { width: 100%; text-align: center; }
 
     .custom-modal-btn {
       padding: 10px 20px;
@@ -136,14 +108,13 @@
       cursor: pointer;
       transition: all 0.2s;
       user-select: none;
+      text-decoration: none;
+      display: inline-block;
     }
 
     .custom-modal-btn.primary {
       background: var(--cyan);
       color: #000;
-      text-decoration: none;
-      text-align: center;
-      display: inline-block;
     }
 
     .custom-modal-btn.primary:hover {
@@ -151,36 +122,17 @@
       transform: translateY(-1px);
     }
 
-    .custom-modal-btn.primary:active {
-      transform: translateY(0);
-    }
-
     .custom-modal-btn.secondary {
       background: var(--border);
       color: var(--text);
     }
 
-    .custom-modal-btn.secondary:hover {
-      background: rgba(255,255,255,0.1);
-    }
-
-    .custom-modal-buttons.column {
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .custom-modal-buttons.column .custom-modal-btn {
-      width: 100%;
-      text-align: center;
-    }
-    /* --------------------------------- */
+    .custom-modal-btn.secondary:hover { background: rgba(255,255,255,0.1); }
 
     .tap-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       z-index: 99999;
       background: rgba(10,10,15,.95);
       display: flex;
@@ -192,10 +144,7 @@
       padding: 20px;
     }
 
-    .tap-overlay.hidden {
-      opacity: 0;
-      pointer-events: none;
-    }
+    .tap-overlay.hidden { opacity: 0; pointer-events: none; }
 
     .tap-overlay-text {
       color: var(--cyan);
@@ -275,10 +224,7 @@
       text-align: left;
     }
 
-    .legal-warning-text strong {
-      color: var(--yellow);
-      font-weight: 600;
-    }
+    .legal-warning-text strong { color: var(--yellow); font-weight: 600; }
 
     .legal-warning-footer {
       margin-top: 12px;
@@ -346,8 +292,7 @@
       width: 100%;
       height: 100%;
       position: absolute;
-      top: 0;
-      left: 0;
+      top: 0; left: 0;
       animation: logoSpin 20s linear infinite;
       pointer-events: none;
       z-index: 10;
@@ -362,8 +307,7 @@
 
     .wave-circle {
       position: absolute;
-      top: 50%;
-      left: 50%;
+      top: 50%; left: 50%;
       transform: translate(-50%, -50%);
       border-radius: 50%;
       border: 3px solid var(--cyan);
@@ -388,19 +332,13 @@
 
     #viz-canvas {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
       z-index: 1;
       display: none;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 12px;
-    }
+    .container { max-width: 800px; margin: 0 auto; padding: 0 12px; }
 
     .main-block {
       background: var(--panel);
@@ -462,8 +400,7 @@
     }
 
     .genre-fav svg {
-      width: 14px;
-      height: 14px;
+      width: 14px; height: 14px;
       fill: none;
       stroke: var(--text-dim);
       stroke-width: 1.5;
@@ -510,10 +447,8 @@
     .install-btn-genre::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,.1), transparent);
       transition: left .5s;
     }
@@ -527,14 +462,9 @@
     }
 
     .install-btn-genre.installed {
-      opacity: 0;
-      height: 0;
-      padding: 0;
-      margin: 0;
-      border-width: 0;
-      width: 0;
-      overflow: hidden;
-      pointer-events: none;
+      opacity: 0; height: 0; padding: 0; margin: 0;
+      border-width: 0; width: 0;
+      overflow: hidden; pointer-events: none;
     }
 
     .reward-btn {
@@ -567,10 +497,8 @@
     .reward-btn::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,.15), transparent);
       transition: left .5s;
     }
@@ -584,14 +512,9 @@
     }
 
     .reward-btn.hidden {
-      opacity: 0;
-      height: 0;
-      padding: 0;
-      margin: 0;
-      border-width: 0;
-      width: 0;
-      overflow: hidden;
-      pointer-events: none;
+      opacity: 0; height: 0; padding: 0; margin: 0;
+      border-width: 0; width: 0;
+      overflow: hidden; pointer-events: none;
     }
 
     @keyframes rewardPulse {
@@ -635,11 +558,7 @@
     thead th:first-child { text-align: left; padding-left: 0; }
     thead th:last-child { text-align: right; padding-right: 0; }
 
-    tbody tr {
-      border-radius: 8px;
-      transition: all .2s;
-    }
-
+    tbody tr { border-radius: 8px; transition: all .2s; }
     tbody tr:hover { background: var(--cyan-dim); }
     tbody tr.selected { background: var(--cyan-dim); }
 
@@ -663,8 +582,7 @@
     }
 
     .star-btn svg {
-      width: 14px;
-      height: 14px;
+      width: 14px; height: 14px;
       fill: none;
       stroke: var(--text-dim);
       stroke-width: 1.5;
@@ -694,12 +612,7 @@
     }
 
     .station { font-weight: 300; font-size: .75rem; color: var(--text); }
-
-    .country-name {
-      font-size: calc(0.6em + 1pt);
-      color: var(--text-dim);
-      margin-top: 1px;
-    }
+    .country-name { font-size: calc(0.6em + 1pt); color: var(--text-dim); margin-top: 1px; }
 
     .signal-btn {
       display: inline-flex;
@@ -725,10 +638,8 @@
     .signal-btn::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
+      top: 0; left: -100%;
+      width: 100%; height: 100%;
       background: linear-gradient(90deg, transparent, rgba(255,255,255,.05), transparent);
       transition: left .5s;
     }
@@ -763,8 +674,7 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 32px;
-      height: 32px;
+      width: 32px; height: 32px;
       border-radius: 50%;
       border: 1px solid var(--border);
       background: transparent;
@@ -776,8 +686,7 @@
     }
 
     .vk-share-btn svg {
-      width: 16px;
-      height: 16px;
+      width: 16px; height: 16px;
       fill: none;
       stroke: currentColor;
       stroke-width: 2;
@@ -794,15 +703,8 @@
       transform: scale(1.05);
     }
 
-    .vk-share-btn:hover svg {
-      filter: drop-shadow(0 0 4px var(--cyan-glow));
-    }
-
-    .vk-share-btn:active {
-      transform: scale(0.95);
-      box-shadow: 0 0 12px var(--cyan-glow);
-    }
-
+    .vk-share-btn:hover svg { filter: drop-shadow(0 0 4px var(--cyan-glow)); }
+    .vk-share-btn:active { transform: scale(0.95); box-shadow: 0 0 12px var(--cyan-glow); }
     .vk-share-btn.shared {
       border-color: var(--cyan);
       color: var(--cyan);
@@ -812,8 +714,7 @@
 
     .bottom-stack {
       position: fixed;
-      bottom: 0;
-      left: 0;
+      bottom: 0; left: 0;
       width: 100%;
       z-index: 9999;
       display: flex;
@@ -845,8 +746,7 @@
     }
 
     .tray-indicator {
-      width: 6px;
-      height: 6px;
+      width: 6px; height: 6px;
       border-radius: 50%;
       background: var(--cyan);
       box-shadow: 0 0 8px var(--cyan);
@@ -879,13 +779,7 @@
       transition: background .3s ease, border-color .3s ease;
     }
 
-    .eq-group {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex: 1;
-      justify-content: center;
-    }
+    .eq-group { display: flex; align-items: center; gap: 6px; flex: 1; justify-content: center; }
 
     .eq-label {
       font-family: 'Myriad', 'Arial', sans-serif;
@@ -918,8 +812,7 @@
     input[type="range"]::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 14px;
-      height: 14px;
+      width: 14px; height: 14px;
       border-radius: 50%;
       background: var(--cyan);
       box-shadow: 0 0 8px var(--cyan-glow);
@@ -942,8 +835,7 @@
       background: linear-gradient(145deg, var(--panel), var(--bg));
       border: 1px solid var(--border);
       color: var(--text-dim);
-      width: 50px;
-      height: 50px;
+      width: 50px; height: 50px;
       border-radius: 50%;
       cursor: pointer;
       font-size: 1.1rem;
@@ -982,15 +874,10 @@
       50% { opacity: .4; }
     }
 
-    .ctrl-icon {
-      display: inline-block;
-      position: relative;
-      z-index: 1;
-    }
+    .ctrl-icon { display: inline-block; position: relative; z-index: 1; }
 
     .ctrl-icon.play-icon {
-      width: 0;
-      height: 0;
+      width: 0; height: 0;
       border-top: 9px solid transparent;
       border-bottom: 9px solid transparent;
       border-left: 14px solid currentColor;
@@ -998,32 +885,27 @@
     }
 
     .ctrl-icon.stop-icon {
-      width: 16px;
-      height: 16px;
+      width: 16px; height: 16px;
       background: currentColor;
       border-radius: 2px;
     }
 
     .ctrl-icon.rec-icon {
-      width: 16px;
-      height: 16px;
+      width: 16px; height: 16px;
       background: currentColor;
       border-radius: 50%;
     }
 
     .ctrl-icon.prev-icon, .ctrl-icon.next-icon {
-      width: 16px;
-      height: 16px;
+      width: 16px; height: 16px;
       position: relative;
     }
 
     .ctrl-icon.prev-icon::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 4px;
-      width: 0;
-      height: 0;
+      top: 0; left: 4px;
+      width: 0; height: 0;
       border-top: 8px solid transparent;
       border-bottom: 8px solid transparent;
       border-right: 12px solid currentColor;
@@ -1032,20 +914,16 @@
     .ctrl-icon.prev-icon::after {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 2px;
-      height: 16px;
+      top: 0; left: 0;
+      width: 2px; height: 16px;
       background: currentColor;
     }
 
     .ctrl-icon.next-icon::before {
       content: '';
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 0;
-      height: 0;
+      top: 0; left: 0;
+      width: 0; height: 0;
       border-top: 8px solid transparent;
       border-bottom: 8px solid transparent;
       border-left: 12px solid currentColor;
@@ -1054,10 +932,8 @@
     .ctrl-icon.next-icon::after {
       content: '';
       position: absolute;
-      top: 0;
-      right: 0;
-      width: 2px;
-      height: 16px;
+      top: 0; right: 0;
+      width: 2px; height: 16px;
       background: currentColor;
     }
 
@@ -1072,20 +948,11 @@
       line-height: 1.6;
     }
 
-    .footer-link {
-      color: var(--text-dim);
-      text-decoration: none;
-      transition: color .3s;
-    }
-
+    .footer-link { color: var(--text-dim); text-decoration: none; transition: color .3s; }
     .footer-link:hover { color: var(--cyan); }
 
     @media (max-width: 600px) {
-      :root {
-        --panel-height: 200px;
-        --star-w: 14px;
-        --star-gap: 3mm;
-      }
+      :root { --panel-height: 200px; --star-w: 14px; --star-gap: 3mm; }
       .tap-overlay { padding: 15px; }
       .tap-overlay-text { font-size: 1.1rem; letter-spacing: 2px; }
       .tap-overlay-sub { font-size: .7rem; margin-bottom: 20px; }
@@ -1120,7 +987,6 @@
       .star-btn svg { width: 12px; height: 12px; }
       .vk-share-btn svg { width: 14px; height: 14px; }
       .vk-share-btn { width: 30px; height: 30px; }
-      
       .custom-modal { padding: 20px; width: 92%; }
       .custom-modal-title { font-size: 1rem; }
       .custom-modal-text { font-size: 0.85rem; }
@@ -1134,7 +1000,7 @@
 
     <div class="legal-warning">
       <div class="legal-warning-header">
-        <span class="legal-warning-icon">️</span>
+        <span class="legal-warning-icon">⚠️</span>
         <span class="legal-warning-title">Важная информация</span>
       </div>
       <div class="legal-warning-text">
@@ -1493,6 +1359,14 @@
       return `${VK_APP_BASE_URL}#station=${encodeURIComponent(streamUrl)}`;
     }
 
+    function formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
     function initAds() {
       if (!window.vkBridge) {
         setTimeout(initAds, 200);
@@ -1513,7 +1387,7 @@
             console.log('✅ Межстраничная реклама готова');
           }
         })
-        .catch((error) => { console.warn('⚠️ Ошибка проверки:', error); });
+        .catch((error) => { console.warn('️ Ошибка проверки:', error); });
     }
 
     function checkRewardAd() {
@@ -2095,7 +1969,7 @@
       playStation(filteredStations[(idx - 1 + filteredStations.length) % filteredStations.length].stream);
     }
 
-    // --- ЗАПИСЬ С МОБИЛЬНОЙ ЗАГРУЗКОЙ ---
+    // --- ЗАПИСЬ С СКАЧИВАНИЕМ ЧЕРЕЗ VK BRIDGE ---
     function toggleRecording() {
       if (!currentStationId) {
         showNotification('Сначала выберите и включите радиостанцию', 'warning');
@@ -2112,9 +1986,6 @@
       }
 
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-      const isAndroid = /Android/.test(navigator.userAgent);
-      const isMobile = isIOS || isAndroid;
-      const isWebView = /wv|WebView/i.test(navigator.userAgent) || window.vkBridge;
 
       if (isIOS) {
         showNotification(
@@ -2221,16 +2092,8 @@
           const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
           const fileName = `${safeName}_record.${ext}`;
           
-          // Разделение на мобильные и десктопные устройства
-          if (isMobile && isWebView) {
-            handleMobileDownload(blob, fileName, actualType);
-          } else if (isMobile) {
-            handleMobileDownload(blob, fileName, actualType);
-          } else {
-            handleDesktopDownload(blob, fileName);
-          }
-          
-          showNotification('Запись завершена! Файл сохраняется...', 'success');
+          // Скачиваем через VK Bridge
+          downloadFileViaVKBridge(blob, fileName, actualType);
         };
 
         mediaRecorder.onerror = (e) => {
@@ -2260,37 +2123,71 @@
       }
     }
 
-    // Загрузка для десктопных браузеров
-    function handleDesktopDownload(blob, fileName) {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.style.display = 'none';
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
+    // Скачивание через VK Bridge API
+    function downloadFileViaVKBridge(blob, fileName, mimeType) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64Data = reader.result.split(',')[1];
+        
+        if (window.vkBridge) {
+          vkBridge.send('VKWebAppDownloadFile', {
+            file: base64Data,
+            filename: fileName
+          }).then((data) => {
+            console.log('✅ Файл сохранен через VK Bridge:', data);
+            showNotification(
+              `✅ Файл сохранен!<br><br>Имя: ${fileName}<br>Размер: ${formatFileSize(blob.size)}`,
+              'success'
+            );
+          }).catch((error) => {
+            console.error('❌ Ошибка VKWebAppDownloadFile:', error);
+            // Fallback: пробуем через обычный download
+            fallbackDownload(blob, fileName);
+          });
+        } else {
+          fallbackDownload(blob, fileName);
+        }
+      };
       
-      setTimeout(() => {
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-      }, 100);
+      reader.onerror = () => {
+        console.error('❌ Ошибка чтения Blob:', reader.error);
+        showNotification('Ошибка при подготовке файла.', 'error');
+      };
+      
+      reader.readAsDataURL(blob);
     }
 
-    // Загрузка для мобильных устройств с видимой кнопкой
-    function handleMobileDownload(blob, fileName, mimeType) {
+    // Fallback скачивание
+    function fallbackDownload(blob, fileName) {
       const url = URL.createObjectURL(blob);
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
       
-      if (isIOS) {
-        showIOSDownloadInstructions(url, fileName);
+      if (isMobile) {
+        // Для мобильных показываем модальное окно с кнопкой
+        showMobileDownloadModal(url, fileName, blob.size);
       } else {
-        showMobileDownloadButton(url, fileName);
+        // Для десктопа обычная загрузка
+        const a = document.createElement('a');
+        a.style.display = 'none';
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        
+        setTimeout(() => {
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+        }, 100);
+        
+        showNotification(
+          `✅ Файл сохранен!<br><br>Имя: ${fileName}<br>Размер: ${formatFileSize(blob.size)}`,
+          'success'
+        );
       }
     }
 
-    // Модальное окно с кнопкой скачивания для Android
-    function showMobileDownloadButton(url, fileName) {
-      // Удаляем существующее модальное окно
+    // Модальное окно для мобильных с кнопкой скачивания
+    function showMobileDownloadModal(url, fileName, fileSize) {
       const existing = document.getElementById('downloadModal');
       if (existing) existing.remove();
 
@@ -2304,17 +2201,15 @@
             <span class="custom-modal-title">Скачивание записи</span>
           </div>
           <div class="custom-modal-text">
-            <p>Файл готов к загрузке. Нажмите кнопку ниже для сохранения.</p>
-            <p style="font-size: 0.85rem; margin-top: 15px;">
-              <strong>Если файл не загружается:</strong><br>
-              1. Откройте это приложение в браузере Chrome<br>
-              2. Или скопируйте ссылку и откройте в новой вкладке
+            <p>Файл готов: <strong>${fileName}</strong> (${formatFileSize(fileSize)})</p>
+            <p style="margin-top: 15px;">
+              <strong>Нажмите кнопку ниже для сохранения файла:</strong>
             </p>
           </div>
           <div class="custom-modal-buttons column">
             <a href="${url}" download="${fileName}" 
-               class="custom-modal-btn primary" 
-               id="downloadLink">
+               class="custom-modal-btn primary"
+               style="text-align: center; text-decoration: none; display: block;">
               ⬇️ Скачать файл
             </a>
             <button class="custom-modal-btn secondary" id="closeDownloadBtn">
@@ -2327,7 +2222,6 @@
       document.body.appendChild(overlay);
       setTimeout(() => { overlay.style.display = 'flex'; }, 10);
 
-      // Обработчик кнопки закрытия
       document.getElementById('closeDownloadBtn').addEventListener('click', () => {
         overlay.style.opacity = '0';
         setTimeout(() => {
@@ -2336,7 +2230,6 @@
         }, 300);
       });
 
-      // Закрытие по клику на оверлей
       overlay.addEventListener('click', (e) => {
         if (e.target === overlay) {
           overlay.style.opacity = '0';
@@ -2347,64 +2240,7 @@
         }
       });
     }
-
-    // Инструкции для iOS
-    function showIOSDownloadInstructions(url, fileName) {
-      const existing = document.getElementById('iosDownloadModal');
-      if (existing) existing.remove();
-
-      const overlay = document.createElement('div');
-      overlay.id = 'iosDownloadModal';
-      overlay.className = 'custom-modal-overlay';
-      overlay.innerHTML = `
-        <div class="custom-modal">
-          <div class="custom-modal-header">
-            <span class="custom-modal-icon">️</span>
-            <span class="custom-modal-title">iOS: Сохранение записи</span>
-          </div>
-          <div class="custom-modal-text">
-            <p><strong>На iOS автоматическая загрузка ограничена.</strong></p>
-            <p style="margin-top: 15px;">
-              <strong>Способ 1:</strong> Нажмите кнопку ниже, затем в открывшейся странице нажмите "Поделиться" → "Сохранить в Файлы"
-            </p>
-            <p>
-              <strong>Способ 2:</strong> Используйте функцию "Запись экрана" в Пункте управления iOS
-            </p>
-          </div>
-          <div class="custom-modal-buttons column">
-            <a href="${url}" target="_blank"
-               class="custom-modal-btn primary">
-               Открыть аудио файл
-            </a>
-            <button class="custom-modal-btn secondary" id="closeIOSBtn">
-              Закрыть
-            </button>
-          </div>
-        </div>
-      `;
-
-      document.body.appendChild(overlay);
-      setTimeout(() => { overlay.style.display = 'flex'; }, 10);
-
-      document.getElementById('closeIOSBtn').addEventListener('click', () => {
-        overlay.style.opacity = '0';
-        setTimeout(() => {
-          overlay.remove();
-          URL.revokeObjectURL(url);
-        }, 300);
-      });
-
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-          overlay.style.opacity = '0';
-          setTimeout(() => {
-            overlay.remove();
-            URL.revokeObjectURL(url);
-          }, 300);
-        }
-      });
-    }
-    // -------------------------------------
+    // ---------------------------------------------
 
     function skipToNext() {
       if (isAutoSkipping) return;
