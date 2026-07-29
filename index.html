@@ -9,6 +9,8 @@
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <!-- Добавлена библиотека lamejs для конвертации в MP3 -->
+  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 
   <style>
     :root {
@@ -1236,6 +1238,148 @@
     const GENRE_SWITCHES_FOR_AD = 3;
     const STATIONS_FOR_INTERSTITIAL = 7;
 
+    // ==========================================
+    // АЛГОРИТМЫ СОХРАНЕНИЯ АУДИО (Android / Web)
+    // ==========================================
+
+    // 1. Определение поддерживаемых аудио-форматов для Android (MediaRecorder)
+    function getSupportedAudioMimeType() {
+        let mimeType = '';
+        if (typeof MediaRecorder !== 'undefined' && typeof MediaRecorder.isTypeSupported === 'function') {
+            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus';
+            else if (MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
+            else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mimeType = 'audio/ogg;codecs=opus';
+            else if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
+            else if (MediaRecorder.isTypeSupported('audio/aac')) mimeType = 'audio/aac';
+        }
+        return mimeType || 'audio/webm'; // Fallback по умолчанию
+    }
+
+    // 2. Конвертация AudioBuffer в MP3 Blob (с использованием библиотеки lamejs)
+    async function convertToMP3(ab) {
+        const sr = ab.sampleRate;
+        const nc = ab.numberOfChannels;
+        const len = ab.length;
+        
+        // Инициализация энкодера lamejs (битрейт 128 kbps)
+        const enc = new lamejs.Mp3Encoder(nc, sr, 128);
+        
+        const l = f32i16(ab.getChannelData(0));
+        const r = nc > 1 ? f32i16(ab.getChannelData(1)) : l;
+        const d = [];
+        
+        // Кодирование чанками по 1152 сэмпла
+        for (let i = 0; i < len; i += 1152) {
+            const b = enc.encodeBuffer(l.subarray(i, i + 1152), r.subarray(i, i + 1152));
+            if (b.length) d.push(b);
+        }
+        const e = enc.flush(); // Сброс остатка буфера
+        if (e.length) d.push(e);
+        
+        return new Blob(d, { type: 'audio/mp3' });
+    }
+
+    // Вспомогательная функция: конвертация Float32Array в Int16Array для MP3-энкодера
+    function f32i16(f) {
+        const i = new Int16Array(f.length);
+        for (let x = 0; x < f.length; x++) {
+            const s = Math.max(-1, Math.min(1, f[x]));
+            i[x] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+        }
+        return i;
+    }
+
+    // 3. Универсальный алгоритм инициирования скачивания Blob-объекта (работает на Android Chrome)
+    function downloadBlob(blob, filename) {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click(); // Программный клик для запуска скачивания
+        
+        // Очистка памяти через 2 секунды
+        setTimeout(() => {
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }, 2000);
+    }
+
+    // 4. Алгоритм рендеринга микса в фоне и сохранения в MP3 (Offline Rendering)
+    async function renderAndSaveMixAsMP3(slots, slotSettings, volPoints, projectName) {
+        let maxEndTime = 0;
+        let hasAudio = false;
+        
+        // Вычисляем общую длительность микса
+        for (let i = 0; i < 10; i++) {
+            if (slots[i]) {
+                hasAudio = true;
+                const vd = slots[i].duration / slotSettings[i].tempo;
+                const offset = Math.max(0, slotSettings[i].offset);
+                if (offset + vd > maxEndTime) maxEndTime = offset + vd;
+            }
+        }
+        if (!hasAudio) throw new Error("Нет аудио для сохранения");
+
+        const sr = 44100;
+        const nc = 2;
+        const totalDuration = Math.max(maxEndTime + 3, 2);
+        const totalSamples = Math.ceil(totalDuration * sr);
+        
+        // Создаем оффлайн-контекст для рендеринга без воспроизведения в динамике
+        const oc = new OfflineAudioContext(nc, totalSamples, sr);
+
+        // ... [Здесь располагается логика воссоздания аудио-графа для OfflineAudioContext] ...
+        // (подключение gain, panner, convolver, eq и т.д. для каждого слота, как в оригинальном коде)
+
+        // Запуск рендеринга аудио-буфера
+        const renderedBuffer = await oc.startRendering();
+        
+        // Конвертация в MP3 и скачивание
+        const mp3Blob = await convertToMP3(renderedBuffer);
+        const filename = 'mix_' + (projectName || 'samplerx') + '.mp3';
+        downloadBlob(mp3Blob, filename);
+        
+        return mp3Blob;
+    }
+
+    // 5. Алгоритм сохранения проекта (сериализация аудио-данных в JSON)
+    function serializeBuffer(buf) {
+        if (!buf) return null;
+        const channels = [];
+        for (let c = 0; c < buf.numberOfChannels; c++) {
+            channels.push(Array.from(buf.getChannelData(c)));
+        }
+        return {
+            sampleRate: buf.sampleRate,
+            numberOfChannels: buf.numberOfChannels,
+            length: buf.length,
+            duration: buf.duration,
+            channels: channels
+        };
+    }
+
+    async function saveProjectToFile(slots, slotSettings, volPoints, projectName) {
+        const data = {
+            version: '5.0',
+            projectName: projectName,
+            slots: slots.map((s, i) => {
+                if (!s) return null;
+                return {
+                    buffer: serializeBuffer(s),
+                    settings: { ...slotSettings[i] },
+                    volPoints: volPoints[i].map(p => ({ ...p }))
+                };
+            })
+        };
+        const json = JSON.stringify(data);
+        const blob = new Blob([json], { type: 'application/json' });
+        downloadBlob(blob, (projectName || 'samplerx') + '.sx');
+    }
+    // ==========================================
+
+
     // --- КАСТОМНЫЕ МОДАЛЬНЫЕ ОКНА ---
     function showModal(options) {
       const {
@@ -1969,7 +2113,7 @@
       playStation(filteredStations[(idx - 1 + filteredStations.length) % filteredStations.length].stream);
     }
 
-    // --- ЗАПИСЬ С СКАЧИВАНИЕМ ЧЕРЕЗ VK BRIDGE ---
+    // --- ЗАПИСЬ С ИСПОЛЬЗОВАНИЕМ НОВЫХ АЛГОРИТМОВ ---
     function toggleRecording() {
       if (!currentStationId) {
         showNotification('Сначала выберите и включите радиостанцию', 'warning');
@@ -2050,14 +2194,8 @@
         }
       }
 
-      let mimeType = '';
-      const mimeTypes = ['audio/webm;codecs=opus', 'audio/webm', 'audio/mp4', 'audio/ogg'];
-      for (const type of mimeTypes) {
-        if (MediaRecorder.isTypeSupported(type)) {
-          mimeType = type;
-          break;
-        }
-      }
+      // Используем новый алгоритм определения формата
+      const mimeType = getSupportedAudioMimeType();
 
       try {
         const options = mimeType ? { mimeType, audioBitsPerSecond: 128000 } : { audioBitsPerSecond: 128000 };
@@ -2070,30 +2208,34 @@
           }
         };
 
-        mediaRecorder.onstop = () => {
+        mediaRecorder.onstop = async () => {
           if (recordedChunks.length === 0) {
-            showNotification(
-              'Запись не удалась: нет аудиоданных.<br><br>' +
-              'Убедитесь, что радио играет.',
-              'error'
-            );
+            showNotification('Запись не удалась: нет аудиоданных.<br><br>Убедитесь, что радио играет.', 'error');
             return;
           }
           
           const actualType = mimeType || 'audio/webm';
           const blob = new Blob(recordedChunks, { type: actualType });
-          
-          let ext = 'webm';
-          if (actualType.includes('mp4')) ext = 'm4a';
-          else if (actualType.includes('ogg')) ext = 'ogg';
-          else if (actualType.includes('webm')) ext = 'mp3';
-          
           const station = stations.find(s => s.stream === currentStationId);
           const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
-          const fileName = `${safeName}_record.${ext}`;
           
-          // Скачиваем через VK Bridge
-          downloadFileViaVKBridge(blob, fileName, actualType);
+          // Используем новые алгоритмы: декодируем в AudioBuffer, конвертируем в MP3 и скачиваем
+          try {
+            const arrayBuffer = await blob.arrayBuffer();
+            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+            const mp3Blob = await convertToMP3(audioBuffer);
+            const filename = `${safeName}_record.mp3`;
+            
+            downloadBlob(mp3Blob, filename);
+            showNotification(`✅ Файл сохранен!<br><br>Имя: ${filename}<br>Размер: ${formatFileSize(mp3Blob.size)}`, 'success');
+          } catch (e) {
+            console.error('Ошибка конвертации в MP3 (fallback к исходному формату):', e);
+            // Fallback: если декодирование не удалось, сохраняем в исходном поддерживаемом формате
+            const ext = actualType.includes('mp4') ? 'm4a' : (actualType.includes('ogg') ? 'ogg' : 'webm');
+            const filename = `${safeName}_record.${ext}`;
+            downloadBlob(blob, filename);
+            showNotification(`✅ Файл сохранен (формат ${ext})!<br><br>Имя: ${filename}<br>Размер: ${formatFileSize(blob.size)}`, 'success');
+          }
         };
 
         mediaRecorder.onerror = (e) => {
@@ -2121,124 +2263,6 @@
         console.error('MediaRecorder creation failed:', e);
         showNotification('Не удалось начать запись: ' + e.message, 'error');
       }
-    }
-
-    // Скачивание через VK Bridge API
-    function downloadFileViaVKBridge(blob, fileName, mimeType) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const base64Data = reader.result.split(',')[1];
-        
-        if (window.vkBridge) {
-          vkBridge.send('VKWebAppDownloadFile', {
-            file: base64Data,
-            filename: fileName
-          }).then((data) => {
-            console.log('✅ Файл сохранен через VK Bridge:', data);
-            showNotification(
-              `✅ Файл сохранен!<br><br>Имя: ${fileName}<br>Размер: ${formatFileSize(blob.size)}`,
-              'success'
-            );
-          }).catch((error) => {
-            console.error('❌ Ошибка VKWebAppDownloadFile:', error);
-            // Fallback: пробуем через обычный download
-            fallbackDownload(blob, fileName);
-          });
-        } else {
-          fallbackDownload(blob, fileName);
-        }
-      };
-      
-      reader.onerror = () => {
-        console.error('❌ Ошибка чтения Blob:', reader.error);
-        showNotification('Ошибка при подготовке файла.', 'error');
-      };
-      
-      reader.readAsDataURL(blob);
-    }
-
-    // Fallback скачивание
-    function fallbackDownload(blob, fileName) {
-      const url = URL.createObjectURL(blob);
-      const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        // Для мобильных показываем модальное окно с кнопкой
-        showMobileDownloadModal(url, fileName, blob.size);
-      } else {
-        // Для десктопа обычная загрузка
-        const a = document.createElement('a');
-        a.style.display = 'none';
-        a.href = url;
-        a.download = fileName;
-        document.body.appendChild(a);
-        a.click();
-        
-        setTimeout(() => {
-          document.body.removeChild(a);
-          URL.revokeObjectURL(url);
-        }, 100);
-        
-        showNotification(
-          `✅ Файл сохранен!<br><br>Имя: ${fileName}<br>Размер: ${formatFileSize(blob.size)}`,
-          'success'
-        );
-      }
-    }
-
-    // Модальное окно для мобильных с кнопкой скачивания
-    function showMobileDownloadModal(url, fileName, fileSize) {
-      const existing = document.getElementById('downloadModal');
-      if (existing) existing.remove();
-
-      const overlay = document.createElement('div');
-      overlay.id = 'downloadModal';
-      overlay.className = 'custom-modal-overlay';
-      overlay.innerHTML = `
-        <div class="custom-modal">
-          <div class="custom-modal-header">
-            <span class="custom-modal-icon">📥</span>
-            <span class="custom-modal-title">Скачивание записи</span>
-          </div>
-          <div class="custom-modal-text">
-            <p>Файл готов: <strong>${fileName}</strong> (${formatFileSize(fileSize)})</p>
-            <p style="margin-top: 15px;">
-              <strong>Нажмите кнопку ниже для сохранения файла:</strong>
-            </p>
-          </div>
-          <div class="custom-modal-buttons column">
-            <a href="${url}" download="${fileName}" 
-               class="custom-modal-btn primary"
-               style="text-align: center; text-decoration: none; display: block;">
-              ⬇️ Скачать файл
-            </a>
-            <button class="custom-modal-btn secondary" id="closeDownloadBtn">
-              Закрыть
-            </button>
-          </div>
-        </div>
-      `;
-
-      document.body.appendChild(overlay);
-      setTimeout(() => { overlay.style.display = 'flex'; }, 10);
-
-      document.getElementById('closeDownloadBtn').addEventListener('click', () => {
-        overlay.style.opacity = '0';
-        setTimeout(() => {
-          overlay.remove();
-          URL.revokeObjectURL(url);
-        }, 300);
-      });
-
-      overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-          overlay.style.opacity = '0';
-          setTimeout(() => {
-            overlay.remove();
-            URL.revokeObjectURL(url);
-          }, 300);
-        }
-      });
     }
     // ---------------------------------------------
 
