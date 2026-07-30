@@ -9,8 +9,6 @@
   <script src="https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
-  <!-- Добавлена библиотека lamejs для конвертации в MP3 -->
-  <script src="https://cdn.jsdelivr.net/npm/lamejs@1.2.1/lame.min.js"></script>
 
   <style>
     :root {
@@ -860,17 +858,6 @@
       box-shadow: inset 2px 2px 4px rgba(0,0,0,.1), inset -2px -2px 4px rgba(255,255,255,.05);
     }
 
-    .np-btn.rec-btn.recording {
-      color: var(--red);
-      border-color: var(--red);
-      animation: recPulse 1.5s infinite;
-    }
-
-    @keyframes recPulse {
-      0%, 100% { box-shadow: 0 0 5px rgba(255,68,102,.6); }
-      50% { box-shadow: 0 0 20px rgba(255,68,102,.6); }
-    }
-
     @keyframes blink {
       0%, 100% { opacity: 1; }
       50% { opacity: .4; }
@@ -890,12 +877,6 @@
       width: 16px; height: 16px;
       background: currentColor;
       border-radius: 2px;
-    }
-
-    .ctrl-icon.rec-icon {
-      width: 16px; height: 16px;
-      background: currentColor;
-      border-radius: 50%;
     }
 
     .ctrl-icon.prev-icon, .ctrl-icon.next-icon {
@@ -1006,9 +987,8 @@
         <span class="legal-warning-title">Важная информация</span>
       </div>
       <div class="legal-warning-text">
-        Запись радиоэфира в Российской Федерации разрешается, если она осуществляется <strong>исключительно для личного использования</strong> (ст. 1273 ГК РФ).
-        <br><br>
-        Запрещается распространение, публичное воспроизведение и коммерческое использование записей без согласия правообладателей.
+        Прослушивание радиоэфира осуществляется в ознакомительных целях. 
+        Все права на транслируемый контент принадлежат официальным правообладателям.
       </div>
       <div class="legal-warning-footer">
         <span>📻</span>
@@ -1110,7 +1090,6 @@
       <button class="np-btn" onclick="closeVizAndExec(playPrevious)"><span class="ctrl-icon prev-icon"></span></button>
       <button class="np-btn" onclick="closeVizAndExec(stopPlayback)"><span class="ctrl-icon stop-icon"></span></button>
       <button class="np-btn" onclick="closeVizAndExec(replayCurrent)"><span class="ctrl-icon play-icon"></span></button>
-      <button class="np-btn rec-btn" id="recBtn" onclick="closeVizAndExec(toggleRecording)"><span class="ctrl-icon rec-icon"></span></button>
       <button class="np-btn" onclick="closeVizAndExec(playNext)"><span class="ctrl-icon next-icon"></span></button>
     </div>
   </div>
@@ -1220,7 +1199,6 @@
     let stallTimer = null;
     let isAutoSkipping = false;
     let audioCtx = null, analyser = null, sourceNode = null, bassFilter = null, trebleFilter = null, gainNode = null;
-    let mediaRecorder = null, recordedChunks = [], isRecording = false;
     let vizActive = false, vizAnimId = null, threeScene = null, threeCamera = null, threeRenderer = null, threeControls = null, instancedMesh = null, particleCount = 30000, positions, velocities, masses, angularMoments, timeGlobal = 0;
 
     let favoriteStations = [];
@@ -1230,155 +1208,11 @@
     let interstitialReady = false;
     let rewardReady = false;
     let lastInterstitialTime = 0;
-    let genreSwitchCount = 0;
-    let stationPlayCount = 0;
     let premiumActive = false;
     let premiumExpiry = 0;
-    const INTERSTITIAL_COOLDOWN = 90000;
-    const GENRE_SWITCHES_FOR_AD = 3;
-    const STATIONS_FOR_INTERSTITIAL = 7;
-
-    // ==========================================
-    // АЛГОРИТМЫ СОХРАНЕНИЯ АУДИО (Android / Web)
-    // ==========================================
-
-    // 1. Определение поддерживаемых аудио-форматов для Android (MediaRecorder)
-    function getSupportedAudioMimeType() {
-        let mimeType = '';
-        if (typeof MediaRecorder !== 'undefined' && typeof MediaRecorder.isTypeSupported === 'function') {
-            if (MediaRecorder.isTypeSupported('audio/webm;codecs=opus')) mimeType = 'audio/webm;codecs=opus';
-            else if (MediaRecorder.isTypeSupported('audio/webm')) mimeType = 'audio/webm';
-            else if (MediaRecorder.isTypeSupported('audio/ogg;codecs=opus')) mimeType = 'audio/ogg;codecs=opus';
-            else if (MediaRecorder.isTypeSupported('audio/mp4')) mimeType = 'audio/mp4';
-            else if (MediaRecorder.isTypeSupported('audio/aac')) mimeType = 'audio/aac';
-        }
-        return mimeType || 'audio/webm'; // Fallback по умолчанию
-    }
-
-    // 2. Конвертация AudioBuffer в MP3 Blob (с использованием библиотеки lamejs)
-    async function convertToMP3(ab) {
-        const sr = ab.sampleRate;
-        const nc = ab.numberOfChannels;
-        const len = ab.length;
-        
-        // Инициализация энкодера lamejs (битрейт 128 kbps)
-        const enc = new lamejs.Mp3Encoder(nc, sr, 128);
-        
-        const l = f32i16(ab.getChannelData(0));
-        const r = nc > 1 ? f32i16(ab.getChannelData(1)) : l;
-        const d = [];
-        
-        // Кодирование чанками по 1152 сэмпла
-        for (let i = 0; i < len; i += 1152) {
-            const b = enc.encodeBuffer(l.subarray(i, i + 1152), r.subarray(i, i + 1152));
-            if (b.length) d.push(b);
-        }
-        const e = enc.flush(); // Сброс остатка буфера
-        if (e.length) d.push(e);
-        
-        return new Blob(d, { type: 'audio/mp3' });
-    }
-
-    // Вспомогательная функция: конвертация Float32Array в Int16Array для MP3-энкодера
-    function f32i16(f) {
-        const i = new Int16Array(f.length);
-        for (let x = 0; x < f.length; x++) {
-            const s = Math.max(-1, Math.min(1, f[x]));
-            i[x] = s < 0 ? s * 0x8000 : s * 0x7FFF;
-        }
-        return i;
-    }
-
-    // 3. Универсальный алгоритм инициирования скачивания Blob-объекта (работает на Android Chrome)
-    function downloadBlob(blob, filename) {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = filename;
-        a.style.display = 'none';
-        document.body.appendChild(a);
-        a.click(); // Программный клик для запуска скачивания
-        
-        // Очистка памяти через 2 секунды
-        setTimeout(() => {
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-        }, 2000);
-    }
-
-    // 4. Алгоритм рендеринга микса в фоне и сохранения в MP3 (Offline Rendering)
-    async function renderAndSaveMixAsMP3(slots, slotSettings, volPoints, projectName) {
-        let maxEndTime = 0;
-        let hasAudio = false;
-        
-        // Вычисляем общую длительность микса
-        for (let i = 0; i < 10; i++) {
-            if (slots[i]) {
-                hasAudio = true;
-                const vd = slots[i].duration / slotSettings[i].tempo;
-                const offset = Math.max(0, slotSettings[i].offset);
-                if (offset + vd > maxEndTime) maxEndTime = offset + vd;
-            }
-        }
-        if (!hasAudio) throw new Error("Нет аудио для сохранения");
-
-        const sr = 44100;
-        const nc = 2;
-        const totalDuration = Math.max(maxEndTime + 3, 2);
-        const totalSamples = Math.ceil(totalDuration * sr);
-        
-        // Создаем оффлайн-контекст для рендеринга без воспроизведения в динамике
-        const oc = new OfflineAudioContext(nc, totalSamples, sr);
-
-        // ... [Здесь располагается логика воссоздания аудио-графа для OfflineAudioContext] ...
-        // (подключение gain, panner, convolver, eq и т.д. для каждого слота, как в оригинальном коде)
-
-        // Запуск рендеринга аудио-буфера
-        const renderedBuffer = await oc.startRendering();
-        
-        // Конвертация в MP3 и скачивание
-        const mp3Blob = await convertToMP3(renderedBuffer);
-        const filename = 'mix_' + (projectName || 'samplerx') + '.mp3';
-        downloadBlob(mp3Blob, filename);
-        
-        return mp3Blob;
-    }
-
-    // 5. Алгоритм сохранения проекта (сериализация аудио-данных в JSON)
-    function serializeBuffer(buf) {
-        if (!buf) return null;
-        const channels = [];
-        for (let c = 0; c < buf.numberOfChannels; c++) {
-            channels.push(Array.from(buf.getChannelData(c)));
-        }
-        return {
-            sampleRate: buf.sampleRate,
-            numberOfChannels: buf.numberOfChannels,
-            length: buf.length,
-            duration: buf.duration,
-            channels: channels
-        };
-    }
-
-    async function saveProjectToFile(slots, slotSettings, volPoints, projectName) {
-        const data = {
-            version: '5.0',
-            projectName: projectName,
-            slots: slots.map((s, i) => {
-                if (!s) return null;
-                return {
-                    buffer: serializeBuffer(s),
-                    settings: { ...slotSettings[i] },
-                    volPoints: volPoints[i].map(p => ({ ...p }))
-                };
-            })
-        };
-        const json = JSON.stringify(data);
-        const blob = new Blob([json], { type: 'application/json' });
-        downloadBlob(blob, (projectName || 'samplerx') + '.sx');
-    }
-    // ==========================================
-
+    
+    // Реклама только раз в 20 минут (1 200 000 мс), независимо от действий
+    const INTERSTITIAL_COOLDOWN = 20 * 60 * 1000;
 
     // --- КАСТОМНЫЕ МОДАЛЬНЫЕ ОКНА ---
     function showModal(options) {
@@ -1488,7 +1322,6 @@
     const audioPlayer = document.getElementById('audioPlayer');
     const trayText = document.getElementById('trayText');
     const trayIndicator = document.getElementById('trayIndicator');
-    const recBtn = document.getElementById('recBtn');
     const waveCircles = document.querySelectorAll('.wave-circle');
     const logoSvg = document.querySelector('.logo-svg');
     const tapOverlay = document.getElementById('tapOverlay');
@@ -1549,20 +1382,13 @@
         .catch((error) => { console.warn('⚠️ Ошибка проверки:', error); });
     }
 
-    function showInterstitialAd(callback) {
+    function showInterstitialAd() {
       const now = Date.now();
-      if (now - lastInterstitialTime < INTERSTITIAL_COOLDOWN) {
-        if (callback) callback();
-        return;
-      }
-      if (chainLinkMode || premiumActive) {
-        if (callback) callback();
-        return;
-      }
-      if (!window.vkBridge || !vkBridgeReady) {
-        if (callback) callback();
-        return;
-      }
+      // Проверяем кулдаун 20 минут и статус премиума
+      if (now - lastInterstitialTime < INTERSTITIAL_COOLDOWN) return;
+      if (chainLinkMode || premiumActive) return;
+      if (!window.vkBridge || !vkBridgeReady || !interstitialReady) return;
+      
       vkBridge.send('VKWebAppShowNativeAds', { ad_format: 'interstitial' })
         .then((data) => {
           if (data.result) {
@@ -1570,11 +1396,9 @@
             interstitialReady = false;
             setTimeout(() => { checkInterstitialAd(); }, 2000);
           }
-          if (callback) callback();
         })
         .catch((error) => {
           console.warn('⚠️ Ошибка показа:', error);
-          if (callback) callback();
         });
     }
 
@@ -1650,27 +1474,6 @@
     function hideRewardButton() {
       const btn = document.getElementById('reward-btn');
       if (btn) btn.classList.add('hidden');
-    }
-
-    function checkAndShowInterstitial(trigger) {
-      if (premiumActive && Date.now() < premiumExpiry) return;
-      else if (premiumActive && Date.now() >= premiumExpiry) {
-        premiumActive = false;
-        try { localStorage.removeItem('premiumExpiry'); } catch (e) {}
-      }
-      if (trigger === 'genre') {
-        genreSwitchCount++;
-        if (genreSwitchCount >= GENRE_SWITCHES_FOR_AD) {
-          genreSwitchCount = 0;
-          showInterstitialAd();
-        }
-      } else if (trigger === 'station') {
-        stationPlayCount++;
-        if (stationPlayCount >= STATIONS_FOR_INTERSTITIAL) {
-          stationPlayCount = 0;
-          showInterstitialAd();
-        }
-      }
     }
 
     function fadeInVolume() {
@@ -1787,15 +1590,6 @@
     }
 
     function forceStopOnBackground() {
-      if (isRecording) {
-        try {
-          if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-            mediaRecorder.stop();
-          }
-        } catch (e) {}
-        isRecording = false;
-        recBtn.classList.remove('recording');
-      }
       if (audioPlayer) {
         audioPlayer.pause();
         audioPlayer.src = '';
@@ -1821,6 +1615,9 @@
       renderGenres();
       initAudioContext();
       initAds();
+      
+      // Запуск таймера межстраничной рекламы: строго раз в 20 минут
+      setInterval(showInterstitialAd, INTERSTITIAL_COOLDOWN);
       
       const urlParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(window.location.hash.substring(1));
@@ -1899,10 +1696,6 @@
     }
 
     function filterGenre(genre) {
-      if (currentGenre !== genre && !chainLinkMode) {
-        checkAndShowInterstitial('genre');
-      }
-
       currentGenre = genre;
       document.querySelectorAll('.genre-item, .genre-fav').forEach(el => el.classList.remove('active'));
 
@@ -2070,9 +1863,7 @@
     function playStation(streamUrl) {
       const station = stations.find(s => s.stream === streamUrl);
       if (!station) return;
-      if (currentStationId && currentStationId !== streamUrl) {
-        checkAndShowInterstitial('station');
-      }
+      
       initAudioContext();
       if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume().catch(() => {});
       if (stallTimer) clearTimeout(stallTimer);
@@ -2113,159 +1904,6 @@
       playStation(filteredStations[(idx - 1 + filteredStations.length) % filteredStations.length].stream);
     }
 
-    // --- ЗАПИСЬ С ИСПОЛЬЗОВАНИЕМ НОВЫХ АЛГОРИТМОВ ---
-    function toggleRecording() {
-      if (!currentStationId) {
-        showNotification('Сначала выберите и включите радиостанцию', 'warning');
-        return;
-      }
-
-      if (isRecording) {
-        if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-          mediaRecorder.stop();
-        }
-        isRecording = false;
-        recBtn.classList.remove('recording');
-        return;
-      }
-
-      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-
-      if (isIOS) {
-        showNotification(
-          'На iOS запись эфира имеет ограничения.<br><br>' +
-          'Рекомендуем использовать встроенную функцию "Запись экрана" в Пункте управления.',
-          'info'
-        );
-        return;
-      }
-
-      if (typeof MediaRecorder === 'undefined') {
-        showNotification(
-          'Ваш браузер не поддерживает запись аудио.<br><br>' +
-          'Откройте приложение в Chrome для Android.',
-          'error'
-        );
-        return;
-      }
-
-      initAudioContext();
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume().catch(() => {});
-      }
-
-      if (!sourceNode) {
-        showNotification('Аудио не инициализировано. Сначала включите воспроизведение станции.', 'warning');
-        return;
-      }
-
-      let stream = null;
-      let useFallback = false;
-      
-      try {
-        if (typeof audioPlayer.captureStream === 'function') {
-          stream = audioPlayer.captureStream();
-        } else if (typeof audioPlayer.mozCaptureStream === 'function') {
-          stream = audioPlayer.mozCaptureStream();
-        }
-        
-        if (!stream || stream.getAudioTracks().length === 0) {
-          useFallback = true;
-        }
-      } catch (e) {
-        console.warn('captureStream failed:', e);
-        useFallback = true;
-      }
-
-      if (useFallback) {
-        try {
-          const dest = audioCtx.createMediaStreamDestination();
-          sourceNode.connect(dest);
-          stream = dest.stream;
-          console.log('Using MediaStreamDestination fallback');
-        } catch (e) {
-          console.error('createMediaStreamDestination failed:', e);
-          showNotification(
-            'Не удалось получить аудиопоток.<br><br>' +
-            'Попробуйте Chrome на Android.',
-            'error'
-          );
-          return;
-        }
-      }
-
-      // Используем новый алгоритм определения формата
-      const mimeType = getSupportedAudioMimeType();
-
-      try {
-        const options = mimeType ? { mimeType, audioBitsPerSecond: 128000 } : { audioBitsPerSecond: 128000 };
-        mediaRecorder = new MediaRecorder(stream, options);
-        recordedChunks = [];
-
-        mediaRecorder.ondataavailable = e => {
-          if (e.data && e.data.size > 0) {
-            recordedChunks.push(e.data);
-          }
-        };
-
-        mediaRecorder.onstop = async () => {
-          if (recordedChunks.length === 0) {
-            showNotification('Запись не удалась: нет аудиоданных.<br><br>Убедитесь, что радио играет.', 'error');
-            return;
-          }
-          
-          const actualType = mimeType || 'audio/webm';
-          const blob = new Blob(recordedChunks, { type: actualType });
-          const station = stations.find(s => s.stream === currentStationId);
-          const safeName = station ? station.name.replace(/[^a-z0-9а-яё]/gi, '_') : 'radio';
-          
-          // Используем новые алгоритмы: декодируем в AudioBuffer, конвертируем в MP3 и скачиваем
-          try {
-            const arrayBuffer = await blob.arrayBuffer();
-            const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
-            const mp3Blob = await convertToMP3(audioBuffer);
-            const filename = `${safeName}_record.mp3`;
-            
-            downloadBlob(mp3Blob, filename);
-            showNotification(`✅ Файл сохранен!<br><br>Имя: ${filename}<br>Размер: ${formatFileSize(mp3Blob.size)}`, 'success');
-          } catch (e) {
-            console.error('Ошибка конвертации в MP3 (fallback к исходному формату):', e);
-            // Fallback: если декодирование не удалось, сохраняем в исходном поддерживаемом формате
-            const ext = actualType.includes('mp4') ? 'm4a' : (actualType.includes('ogg') ? 'ogg' : 'webm');
-            const filename = `${safeName}_record.${ext}`;
-            downloadBlob(blob, filename);
-            showNotification(`✅ Файл сохранен (формат ${ext})!<br><br>Имя: ${filename}<br>Размер: ${formatFileSize(blob.size)}`, 'success');
-          }
-        };
-
-        mediaRecorder.onerror = (e) => {
-          console.error('MediaRecorder error:', e);
-          showNotification('Ошибка при записи.', 'error');
-          isRecording = false;
-          recBtn.classList.remove('recording');
-        };
-
-        if (stream.getAudioTracks().length === 0) {
-          showNotification(
-            'Не удалось получить аудиопоток.<br><br>' +
-            'Убедитесь, что радио играет.',
-            'error'
-          );
-          return;
-        }
-
-        mediaRecorder.start(1000);
-        isRecording = true;
-        recBtn.classList.add('recording');
-        showNotification('Запись началась...', 'info');
-
-      } catch (e) {
-        console.error('MediaRecorder creation failed:', e);
-        showNotification('Не удалось начать запись: ' + e.message, 'error');
-      }
-    }
-    // ---------------------------------------------
-
     function skipToNext() {
       if (isAutoSkipping) return;
       isAutoSkipping = true;
@@ -2279,7 +1917,6 @@
       audioPlayer.pause();
       audioPlayer.src = '';
       if (stallTimer) clearTimeout(stallTimer);
-      if (isRecording) toggleRecording();
       currentStationId = null;
       trayText.textContent = "AWAITING SIGNAL";
       trayText.style.color = 'var(--text-dim)';
