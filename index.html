@@ -165,84 +165,6 @@
       font-weight: 300;
     }
 
-    .legal-warning {
-      max-width: 420px;
-      width: 100%;
-      background: rgba(255, 170, 0, 0.08);
-      border: 1px solid rgba(255, 170, 0, 0.25);
-      border-radius: 14px;
-      padding: 18px 20px;
-      margin-top: 10px;
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 4px 20px rgba(255, 170, 0, 0.1), inset 0 0 20px rgba(255, 170, 0, 0.03);
-      animation: legalFadeIn 1s ease-out 0.3s both;
-    }
-
-    @keyframes legalFadeIn {
-      from { opacity: 0; transform: translateY(15px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .legal-warning-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 12px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid rgba(255, 170, 0, 0.15);
-    }
-
-    .legal-warning-icon {
-      font-size: 1.3rem;
-      filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.4));
-      flex-shrink: 0;
-      animation: iconPulse 3s ease-in-out infinite;
-    }
-
-    @keyframes iconPulse {
-      0%, 100% { transform: scale(1); opacity: 1; }
-      50% { transform: scale(1.1); opacity: 0.85; }
-    }
-
-    .legal-warning-title {
-      color: var(--yellow);
-      font-size: .75rem;
-      letter-spacing: 1.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      font-family: 'Arial', sans-serif;
-    }
-
-    .legal-warning-text {
-      color: var(--text);
-      font-size: .7rem;
-      line-height: 1.7;
-      letter-spacing: 0.5px;
-      font-family: 'Arial', sans-serif;
-      font-weight: 300;
-      text-align: left;
-    }
-
-    .legal-warning-text strong { color: var(--yellow); font-weight: 600; }
-
-    .legal-warning-footer {
-      margin-top: 12px;
-      padding-top: 10px;
-      border-top: 1px solid rgba(255, 170, 0, 0.15);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-      font-size: .6rem;
-      color: var(--text-dim);
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      font-family: 'Arial', sans-serif;
-    }
-
-    .legal-warning-footer span { opacity: 0.7; }
-
     .tap-hint {
       color: var(--text-dim);
       font-size: .65rem;
@@ -939,10 +861,6 @@
       .tap-overlay { padding: 15px; }
       .tap-overlay-text { font-size: 1.1rem; letter-spacing: 2px; }
       .tap-overlay-sub { font-size: .7rem; margin-bottom: 20px; }
-      .legal-warning { padding: 14px 16px; max-width: 100%; }
-      .legal-warning-title { font-size: .65rem; }
-      .legal-warning-text { font-size: .65rem; line-height: 1.6; }
-      .legal-warning-footer { font-size: .55rem; }
       .tap-hint { font-size: .55rem; margin-top: 18px; }
       .header-container { height: 280px; margin-top: 0; }
       .core-wrapper { width: 200px; height: 200px; }
@@ -980,22 +898,6 @@
   <div class="tap-overlay" id="tapOverlay">
     <div class="tap-overlay-text">Tap to Play</div>
     <div class="tap-overlay-sub">MUSIC RADIO ONLINE</div>
-
-    <div class="legal-warning">
-      <div class="legal-warning-header">
-        <span class="legal-warning-icon">⚠️</span>
-        <span class="legal-warning-title">Важная информация</span>
-      </div>
-      <div class="legal-warning-text">
-        Прослушивание радиоэфира осуществляется в ознакомительных целях. 
-        Все права на транслируемый контент принадлежат официальным правообладателям.
-      </div>
-      <div class="legal-warning-footer">
-        <span>📻</span>
-        <span>Используя приложение, вы принимаете эти условия</span>
-      </div>
-    </div>
-
     <div class="tap-hint">▼ Нажмите в любом месте ▼</div>
   </div>
 
