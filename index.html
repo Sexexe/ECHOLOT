@@ -683,8 +683,19 @@ body.mobile-portrait .deck{flex-direction:row;flex-wrap:wrap;justify-content:cen
 body.mobile-portrait .deck-label{order:-1;width:100%;text-align:center;border-bottom:none}
 body.mobile-portrait .turntable{width:var(--u6);height:var(--u6)}
 body.mobile-portrait .tonearm{height:26px}
-body.mobile-portrait .info-display{max-width:none;flex:1;min-width:89px}
-body.mobile-portrait .controls-row{gap:var(--u1)}
+body.mobile-portrait .info-display{
+  max-width:none;
+  flex:0 0 70%;
+  width:70%;
+  min-width:0;
+  margin-right:auto;
+  align-self:center;
+  text-align:left;
+}
+body.mobile-portrait .controls-row{
+  gap:5mm;
+  justify-content:flex-end;
+}
 body.mobile-portrait .play-btn{width:var(--u4);height:var(--u4);font-size:var(--f2)}
 body.mobile-portrait .loop-btn{width:var(--u4);height:var(--u4)}
 body.mobile-portrait .eq-panel{gap:var(--u2);padding:var(--u1);width:100%}
